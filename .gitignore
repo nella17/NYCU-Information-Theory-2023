@@ -1,0 +1,11 @@
+# binary
+*.o
+*.d
+*.exe
+
+# latex
+*.log
+*.aux
+*.fls
+*.fdb_latexmk
+*.synctex.gz
