@@ -26,10 +26,9 @@ signed main(int argc, char* const argv[]) {
     std::string result;
 
     if (opt.encode) {
-        for (size_t i = 0; i < 20; i++)
-            printf("%2lu: %.*x\n", i, (int)opt.bits / 4, indata[i]);
         result = func->encode(indata);
     } else {
+        result = func->decode(indata);
     }
 
     return EXIT_SUCCESS;

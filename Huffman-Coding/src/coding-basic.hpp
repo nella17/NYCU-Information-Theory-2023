@@ -12,7 +12,7 @@ public:
 
     Basic();
     std::string encode(const DataSource&) final;
-    std::string decode(const std::string&) final;
+    std::string decode(const DataSource&) final;
 };
 
 }
