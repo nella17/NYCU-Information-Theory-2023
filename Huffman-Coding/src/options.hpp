@@ -14,7 +14,7 @@ extern const char usage[];
 class Options {
 public:
     std::string type;
-    bool encode = false, decode = false;
+    bool encode = false, decode = false, stream = true;
     int input_fd = STDIN_FILENO, output_fd = STDOUT_FILENO;
     size_t bits = 8;
 

@@ -11,7 +11,7 @@
 
 #include "options.hpp"
 #include "utils.hpp"
-#include "data.hpp"
+#include "datasource.hpp"
 
 #include "coding.hpp"
 
@@ -22,8 +22,7 @@ signed main(int argc, char* const argv[]) {
     auto func = coding::make(opt);
     if (!func) USAGE();
 
-    Data indata(readfile(opt.input_fd));
-
+    DataSource indata(opt);
     std::string result;
 
     if (opt.encode) {

@@ -42,6 +42,8 @@ void Options::parse(int argc, char* const argv[]) {
        switch (c) {
        case 't':
            type = optarg;
+           if (type == "basic")
+               stream = false;
            break;
 
        case 'e':

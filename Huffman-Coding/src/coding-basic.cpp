@@ -1,12 +1,12 @@
 #include "coding-basic.hpp"
 
-#include "data.hpp"
+#include "datasource.hpp"
 
 namespace coding {
 
 Basic::Basic(): Base() {}
 
-std::string Basic::encode(const Data& src) {
+std::string Basic::encode(const DataSource& src) {
     // Data data(src.data);
     return "";
 }
