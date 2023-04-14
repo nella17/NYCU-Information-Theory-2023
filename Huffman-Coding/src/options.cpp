@@ -64,7 +64,7 @@ void Options::parse(int argc, char* const argv[]) {
        case 'o':
            if (output_fd != STDOUT_FILENO)
                close(output_fd);
-           output_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC);
+           output_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC, 0644);
            if (output_fd < 0) perror("open(output)"), exit(EXIT_FAILURE);
            break;
 
