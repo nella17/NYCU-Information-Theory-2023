@@ -35,7 +35,7 @@ DataType Data::read(size_t pos, size_t bits) const {
 uint64_t Data::readint(size_t bits) {
     assert(cur % 8 == 0 and bits % 8 == 0);
     uint64_t ret = 0;
-    for (size_t i = 0; i < bits; i += 8, cur += 8)
+    for (size_t i = 0; i < bits and cur / 8 < data.size(); i += 8, cur += 8)
         ret = (ret << 8) | data[cur/8];
     return ret;
 }

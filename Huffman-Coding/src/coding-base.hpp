@@ -8,8 +8,8 @@ namespace coding {
 
 class Base {
 public:
-    virtual std::string encode(const DataSource&) = 0;
-    virtual std::string decode(const DataSource&) = 0;
+    virtual std::string encode(DataSource&) = 0;
+    virtual std::string decode(DataSource&) = 0;
 };
 
 }

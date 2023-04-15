@@ -9,6 +9,12 @@ DataSource::DataSource(const Options& opts):
     data(!opts.stream ? readfile(opts.input_fd) : "")
     {}
 
+bool DataSource::empty() const {
+    if (!stream) return data.cur < data.size;
+    // TODO
+    __builtin_unreachable();
+}
+
 void DataSource::reset() {
     if (!stream) data.reset();
     assert(false);
@@ -27,6 +33,7 @@ bool DataSource::operator[](size_t idx) const {
 DataType DataSource::read(size_t bits) {
     if (!stream) return data.read(bits);
     // TODO
+    __builtin_unreachable();
 }
 
 DataType DataSource::read(size_t pos, size_t bits) const {
@@ -37,5 +44,6 @@ DataType DataSource::read(size_t pos, size_t bits) const {
 uint64_t DataSource::readint(size_t bits) {
     if (!stream) return data.readint(bits);
     // TODO
+    __builtin_unreachable();
 }
 

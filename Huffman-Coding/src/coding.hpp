@@ -9,9 +9,9 @@
 
 namespace coding {
 
-inline std::unique_ptr<Base> make(Options opt) {
+inline std::unique_ptr<Base> make(const Options& opt) {
     if (opt.type == Basic::TYPE) {
-        auto basic = std::make_unique<Basic>();
+        auto basic = std::make_unique<Basic>(opt);
         return basic;
     }
 

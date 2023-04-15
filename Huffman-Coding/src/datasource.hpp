@@ -16,6 +16,7 @@ public:
 
     DataSource(const Options&);
 
+    bool empty() const;
     void reset();
     void clear();
 
