@@ -11,20 +11,13 @@
 template<uint8_t D = 2, typename V = uint64_t>
 class HuffmanTree {
 public:
-    struct Node;
-    using NodePtr = Node*;
-
-    struct NodePtrCmp {
-        bool operator()(NodePtr, NodePtr);
-    };
-
     struct Node {
         bool end;
         size_t freq, height;
         union {
             V value;
             // TODO: NodePtr -> size_t
-            std::array<NodePtr, D> cls;
+            std::array<size_t, D> cls;
         };
         Node();
         Node(size_t, V);
@@ -34,13 +27,17 @@ public:
     size_t height() const;
 
     Data dump();
-    void dump(NodePtr, Data&);
+    void dump(size_t, Data&);
 
     void buildtable();
     DataType encode(const V);
 
     const size_t bits;
 private:
+    size_t newNode();
+    size_t newNode(size_t, V);
+
     std::unordered_map<V, DataType> table;
-    NodePtr root;
+    size_t root;
+    std::vector<Node> nodes;
 };

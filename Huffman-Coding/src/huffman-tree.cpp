@@ -7,15 +7,6 @@
 #include <vector>
 
 template<uint8_t D, typename V>
-bool
-HuffmanTree<D, V>::HuffmanTree::
-NodePtrCmp::operator()(NodePtr a, NodePtr b) {
-    if (a->freq != b->freq)
-        return a->freq > b->freq;
-    return a < b;
-}
-
-template<uint8_t D, typename V>
 HuffmanTree<D, V>::HuffmanTree::
 Node::Node(): end(false), freq(0), height(0), cls{} {}
 
@@ -24,31 +15,55 @@ HuffmanTree<D, V>::HuffmanTree::
 Node::Node(size_t f, V v): end(true), freq(f), height(1), value(v) {}
 
 template<uint8_t D, typename V>
+size_t
+HuffmanTree<D, V>::HuffmanTree::
+newNode() {
+    size_t idx = nodes.size();
+    nodes.emplace_back();
+    return idx;
+}
+
+template<uint8_t D, typename V>
+size_t
+HuffmanTree<D, V>::HuffmanTree::
+newNode(size_t f, V v) {
+    size_t idx = nodes.size();
+    nodes.emplace_back(f, v);
+    return idx;
+}
+
+template<uint8_t D, typename V>
 HuffmanTree<D, V>::
-HuffmanTree(size_t b, const std::vector<std::pair<size_t, V>>& freq):
-    bits(b)
+HuffmanTree(size_t _b, const std::vector<std::pair<size_t, V>>& freq):
+    bits(_b), root(0), nodes(1)
 {
-    std::priority_queue<NodePtr, std::vector<NodePtr>, NodePtrCmp> pq{};
+    nodes.reserve(freq.size() * 2);
+    auto cmp = [&](size_t a, size_t b) {
+        if (nodes[a].freq != nodes[b].freq)
+            return nodes[a].freq > nodes[b].freq;
+        return a > b;
+    };
+    std::priority_queue<size_t, std::vector<size_t>, decltype(cmp)> pq(cmp);
     for (const auto& [c, v]: freq)
-        pq.emplace(new Node(c, v));
-    while (pq.size() > 1) {
-        auto n = new Node();
-        for (size_t i = 0; !pq.empty() and i < D; i++) {
-            auto node = pq.top(); pq.pop();
-            n->freq += node->freq;
-            n->height = std::max(n->height, node->height + 1);
-            n->cls[i] = node;
+        pq.emplace(newNode(c, v));
+    while (true) {
+        auto next = pq.size() > D ? newNode() : root;
+        for (size_t i = 0; i < D and !pq.empty(); i++) {
+            auto idx = pq.top(); pq.pop();
+            nodes[next].freq += nodes[idx].freq;
+            nodes[next].height = std::max(nodes[next].height, nodes[idx].height + 1);
+            nodes[next].cls[i] = idx;
         }
-        pq.emplace(n);
+        if (pq.empty()) break;
+        pq.emplace(next);
     }
-    root = pq.top(); pq.pop();
 }
 
 template<uint8_t D, typename V>
 size_t
 HuffmanTree<D, V>::
 height() const {
-    return root->height;
+    return nodes[root].height;
 }
 
 template<uint8_t D, typename V>
@@ -63,13 +78,13 @@ dump() {
 template<uint8_t D, typename V>
 void
 HuffmanTree<D, V>::
-dump(NodePtr node, Data& data) {
-    data.writeint(1, node->end);
-    if (node->end) {
-        data.writeint(bits, node->value);
+dump(size_t idx, Data& data) {
+    data.writeint(1, nodes[idx].end);
+    if (nodes[idx].end) {
+        data.writeint(bits, nodes[idx].value);
     } else {
         for (size_t i = 0; i < D; i++) {
-            auto nt = node->cls[i];
+            auto nt = nodes[idx].cls[i];
             if (nt) dump(nt, data);
         }
     }
@@ -81,13 +96,13 @@ HuffmanTree<D, V>::
 buildtable() {
     table.clear();
     DataType dt{};
-    std::function<void(NodePtr)> dfs;
-    dfs = [&](NodePtr it) {
-        if (it->end) {
-            table.emplace(it->value, dt);
+    std::function<void(size_t)> dfs;
+    dfs = [&](size_t idx) {
+        if (nodes[idx].end) {
+            table.emplace(nodes[idx].value, dt);
         } else {
             for (size_t i = 0; i < D; i++) {
-                auto nt = it->cls[i];
+                auto nt = nodes[idx].cls[i];
                 if (nt) {
                     dt.push_back(i);
                     dfs(nt);
