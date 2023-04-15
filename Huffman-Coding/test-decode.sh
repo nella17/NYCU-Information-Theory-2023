@@ -1,8 +1,7 @@
 #!/bin/bash
 set -eux
 
-ARGS="-t basic -d -b 32"
-name="basic"
+. config.sh
 
 DEBUG=1 make -j build
 make -j build
