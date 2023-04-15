@@ -6,34 +6,34 @@
 #include <queue>
 #include <vector>
 
-template<uint8_t D, typename V>
-HuffmanTree<D, V>::HuffmanTree::
+template<uint8_t logD, typename V>
+HuffmanTree<logD, V>::HuffmanTree::
 Node::Node(): end(false), freq(0), height(0), cls{} {}
 
-template<uint8_t D, typename V>
-HuffmanTree<D, V>::HuffmanTree::
+template<uint8_t logD, typename V>
+HuffmanTree<logD, V>::HuffmanTree::
 Node::Node(size_t f, V v): end(true), freq(f), height(1), value(v) {}
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 size_t
-HuffmanTree<D, V>::HuffmanTree::
+HuffmanTree<logD, V>::HuffmanTree::
 newNode() {
     size_t idx = nodes.size();
     nodes.emplace_back();
     return idx;
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 size_t
-HuffmanTree<D, V>::HuffmanTree::
+HuffmanTree<logD, V>::HuffmanTree::
 newNode(size_t f, V v) {
     size_t idx = nodes.size();
     nodes.emplace_back(f, v);
     return idx;
 }
 
-template<uint8_t D, typename V>
-HuffmanTree<D, V>::
+template<uint8_t logD, typename V>
+HuffmanTree<logD, V>::
 HuffmanTree(size_t _b, const std::vector<std::pair<size_t, V>>& freq):
     bits(_b), root(0), nodes(1)
 {
@@ -61,25 +61,25 @@ HuffmanTree(size_t _b, const std::vector<std::pair<size_t, V>>& freq):
     }
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 size_t
-HuffmanTree<D, V>::
+HuffmanTree<logD, V>::
 height() const {
     return nodes[root].height;
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 Data
-HuffmanTree<D, V>::
+HuffmanTree<logD, V>::
 dump() {
     Data data;
     dump(root, data);
     return data;
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 void
-HuffmanTree<D, V>::
+HuffmanTree<logD, V>::
 dump(size_t idx, Data& data) {
     data.writeint(1, nodes[idx].end);
     if (nodes[idx].end) {
@@ -92,9 +92,9 @@ dump(size_t idx, Data& data) {
     }
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 void
-HuffmanTree<D, V>::
+HuffmanTree<logD, V>::
 buildtable() {
     table.clear();
     DataType dt{};
@@ -116,11 +116,11 @@ buildtable() {
     dfs(root);
 }
 
-template<uint8_t D, typename V>
+template<uint8_t logD, typename V>
 DataType
-HuffmanTree<D, V>::
+HuffmanTree<logD, V>::
 encode(const V value) {
     return table.find(value)->second;
 }
 
-template class HuffmanTree<2, uint64_t>;
+template class HuffmanTree<1, uint64_t>;

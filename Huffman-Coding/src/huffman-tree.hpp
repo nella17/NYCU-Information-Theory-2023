@@ -8,9 +8,10 @@
 #include <vector>
 #include <unordered_map>
 
-template<uint8_t D = 2, typename V = uint64_t>
+template<uint8_t logD = 1, typename V = uint64_t>
 class HuffmanTree {
 public:
+    static constexpr uint8_t D = 1 << logD;
     struct Node {
         bool end;
         size_t freq, height;
