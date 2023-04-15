@@ -3,7 +3,9 @@
 #include <cassert>
 #include <iostream>
 
-DataSource::DataSource(const Options& opts):
+#include "options.hpp"
+
+DataSource::DataSource():
     stream(opts.stream),
     remain{},
     data(!opts.stream ? readfile(opts.input_fd) : "")

@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+Options opts;
+
 const char usage[] = R"(
 Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -t, --type <type>       Set coding algorithm

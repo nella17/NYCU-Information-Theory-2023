@@ -7,11 +7,10 @@
 namespace coding {
 
 class Basic: public Base {
-    size_t bits;
 public:
     inline static const std::string TYPE = "basic";
 
-    Basic(const Options&);
+    Basic();
     std::string encode(DataSource&) final;
     std::string decode(DataSource&) final;
 };

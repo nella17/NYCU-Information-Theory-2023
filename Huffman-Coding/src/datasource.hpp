@@ -14,7 +14,7 @@ class DataSource {
     Data data;
 public:
 
-    DataSource(const Options&);
+    DataSource();
 
     bool empty() const;
     void reset();

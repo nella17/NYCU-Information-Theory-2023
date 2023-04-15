@@ -16,16 +16,15 @@
 #include "coding.hpp"
 
 signed main(int argc, char* const argv[]) {
-    Options opt;
-    opt.parse(argc, argv);
+    opts.parse(argc, argv);
 
-    auto func = coding::make(opt);
+    auto func = coding::make();
     if (!func) USAGE();
 
-    DataSource indata(opt);
+    DataSource indata;
     std::string result;
 
-    if (opt.encode) {
+    if (opts.encode) {
         result = func->encode(indata);
     } else {
         result = func->decode(indata);

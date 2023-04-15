@@ -3,6 +3,8 @@
 #include <iostream>
 #include <chrono>
 
+#include "options.hpp"
+
 std::string readfile(int fd) {
     if (lseek(fd, 0, SEEK_SET) < 0) {
         perror("lseek");
@@ -30,11 +32,15 @@ std::string readfile(int fd) {
 
 auto start = std::chrono::steady_clock::now();
 void timer_start(std::string s) {
-    std::cerr << "[timer] " << s << " ... " << std::flush;
+    if (opts.verbose)
+        std::cerr << "[timer] " << s << " ... " << std::flush;
     start = std::chrono::steady_clock::now();
 }
-void timer_stop() {
+double timer_stop() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
-    std::cerr << elapsed_seconds.count() << "s" << std::endl;
+    auto cnt = elapsed_seconds.count();
+    if (opts.verbose)
+        std::cerr << cnt << "s" << std::endl;
+    return cnt;
 }

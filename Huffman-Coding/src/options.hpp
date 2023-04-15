@@ -20,3 +20,5 @@ public:
 
     void parse(int argc, char* const argv[]);
 };
+
+extern Options opts;

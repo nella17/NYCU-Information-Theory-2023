@@ -1,13 +1,14 @@
 #include "coding-basic.hpp"
 
 #include "datasource.hpp"
+#include "options.hpp"
 
 #include <iostream>
 #include <unordered_map>
 
 namespace coding {
 
-Basic::Basic(const Options& opt): Base(), bits(opt.bits) {}
+Basic::Basic(): Base() {}
 
 std::string Basic::encode(DataSource& src) {
     std::unordered_map<uint64_t, size_t> freq{};
@@ -15,7 +16,7 @@ std::string Basic::encode(DataSource& src) {
 
     timer_start("calculate pmf");
     while (src.empty()) {
-        uint64_t value = src.readint(bits);
+        uint64_t value = src.readint(opts.bits);
         freq[value] += 1;
         total += 1;
     }
