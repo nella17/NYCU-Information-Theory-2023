@@ -17,6 +17,7 @@ public:
     DataSrc(bool, int);
 
     bool eof() const;
+    size_t size() const;
     void reset();
 
     bool operator[](size_t) const;

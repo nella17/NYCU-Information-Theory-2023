@@ -12,5 +12,9 @@ using CharValue = std::bitset<8>;
 void timer_start(std::string);
 double timer_stop();
 
+void timer_start_progress(std::string);
+void timer_progress(double);
+double timer_stop_progress();
+
 template<typename T, typename U>
 double calc_entropy(const std::vector<std::pair<T, U>>& freq);

@@ -33,6 +33,14 @@ bool DataSrc::eof() const {
     }
 }
 
+size_t DataSrc::size() const {
+    if (!stream) {
+        return datasize;
+    } else {
+        assert(false);
+    }
+}
+
 void DataSrc::reset() {
     if (!stream) {
         datacur = 0;
