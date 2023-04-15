@@ -14,6 +14,8 @@ if [ "$T" == 1 ]; then
   exit 0
 fi
 
+echo
+
 ./bin/release/huffman-coding.exe \
   $ARGS -e \
   -i ./alexnet.pth -o "./alexnet.pth.${name}.enc"

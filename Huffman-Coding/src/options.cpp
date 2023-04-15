@@ -20,7 +20,6 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     --no-time               No show time info
 
 Coding Algorithms
-    analysis    Analysis input file
     basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
     adaptive    Adaptive Huffman Coding Algorithm
     extended    Extended Huffman Coding Algorithm

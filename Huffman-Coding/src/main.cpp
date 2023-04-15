@@ -12,7 +12,6 @@
 #include "options.hpp"
 #include "utils.hpp"
 #include "datasrc.hpp"
-
 #include "coding.hpp"
 
 signed main(int argc, char* const argv[]) {

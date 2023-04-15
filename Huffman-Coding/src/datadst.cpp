@@ -11,6 +11,7 @@ DataDst::~DataDst() {
 
 void DataDst::write(bool all) {
     if (buf.empty()) return;
+    assert(buf.size() - size / 8 <= 1);
     if (::write(fd, buf.c_str(), (size + (all ? 7 : 0)) / 8) < 0) {
         perror("write");
         exit(EXIT_FAILURE);
