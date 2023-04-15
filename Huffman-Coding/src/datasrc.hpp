@@ -7,14 +7,14 @@
 #include "options.hpp"
 #include "utils.hpp"
 
-class DataSource {
+class DataSrc {
     const bool stream;
     size_t datacur, datasize;
     uint8_t* data;
     DataType remain;
 public:
 
-    DataSource();
+    DataSrc();
 
     bool empty() const;
     void reset();

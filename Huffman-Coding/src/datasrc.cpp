@@ -1,4 +1,4 @@
-#include "datasource.hpp"
+#include "datasrc.hpp"
 
 #include <cassert>
 #include <iostream>
@@ -6,7 +6,7 @@
 
 #include "options.hpp"
 
-DataSource::DataSource():
+DataSrc::DataSrc():
     stream(opts.stream),
     datacur(0),
     remain{}
@@ -25,16 +25,16 @@ DataSource::DataSource():
     }
 }
 
-bool DataSource::empty() const {
+bool DataSrc::empty() const {
     if (!stream) {
         return datacur < datasize;
     } else {
         // TODO
-        __builtin_unreachable();
+        assert(!(bool)"TODO");
     }
 }
 
-void DataSource::reset() {
+void DataSrc::reset() {
     if (!stream) {
         datacur = 0;
     } else {
@@ -42,7 +42,7 @@ void DataSource::reset() {
     }
 }
 
-bool DataSource::operator[](size_t idx) const {
+bool DataSrc::operator[](size_t idx) const {
     if (!stream) {
         return (data[idx / 8] >> (idx % 8)) & 1;
     } else {
@@ -50,7 +50,7 @@ bool DataSource::operator[](size_t idx) const {
     }
 }
 
-DataType DataSource::read(size_t bits) {
+DataType DataSrc::read(size_t bits) {
     if (!stream) {
         auto r = read(datacur, bits);
         datacur += bits;
@@ -58,11 +58,11 @@ DataType DataSource::read(size_t bits) {
     return r;
     } else {
         // TODO
-        __builtin_unreachable();
+        assert(!(bool)"TODO");
     }
 }
 
-DataType DataSource::read(size_t pos, size_t bits) const {
+DataType DataSrc::read(size_t pos, size_t bits) const {
     if (!stream) {
         DataType dt(bits, 0);
         for (size_t i = 0, j = pos; i < bits; i++, j++)
@@ -73,7 +73,7 @@ DataType DataSource::read(size_t pos, size_t bits) const {
     }
 }
 
-uint64_t DataSource::readint(size_t bits) {
+uint64_t DataSrc::readint(size_t bits) {
     if (!stream) {
         assert(datacur % 8 == 0 and bits % 8 == 0);
         uint64_t ret = 0;
@@ -82,7 +82,7 @@ uint64_t DataSource::readint(size_t bits) {
         return ret;
     } else {
         // TODO
-        __builtin_unreachable();
+        assert(!(bool)"TODO");
     }
 }
 

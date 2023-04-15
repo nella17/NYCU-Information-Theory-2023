@@ -11,7 +11,7 @@
 
 #include "options.hpp"
 #include "utils.hpp"
-#include "datasource.hpp"
+#include "datasrc.hpp"
 
 #include "coding.hpp"
 
@@ -21,13 +21,13 @@ signed main(int argc, char* const argv[]) {
     auto func = coding::make();
     if (!func) USAGE();
 
-    DataSource indata;
-    std::string result;
+    DataSrc src;
+    DataDst dst;
 
     if (opts.encode) {
-        result = func->encode(indata);
+        func->encode(src, dst);
     } else {
-        result = func->decode(indata);
+        func->decode(src, dst);
     }
 
     return EXIT_SUCCESS;

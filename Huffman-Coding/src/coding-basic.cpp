@@ -1,6 +1,5 @@
 #include "coding-basic.hpp"
 
-#include "datasource.hpp"
 #include "options.hpp"
 
 #include <iostream>
@@ -10,7 +9,7 @@ namespace coding {
 
 Basic::Basic(): Base() {}
 
-std::string Basic::encode(DataSource& src) {
+void Basic::encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> freq{};
     size_t total = 0;
 
@@ -27,12 +26,9 @@ std::string Basic::encode(DataSource& src) {
         std::cerr << "entropy: " << entropy << '\n'
             << "rate: " << entropy / double(opts.bits) << std::endl;
     }
-
-    return "";
 }
 
-std::string Basic::decode(DataSource& src) {
-    return "";
+void Basic::decode(DataSrc& /* src */, DataDst& /* dst */) {
 }
 
 }

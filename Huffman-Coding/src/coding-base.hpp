@@ -2,14 +2,15 @@
 
 #include <string>
 
-#include "datasource.hpp"
+#include "datasrc.hpp"
+#include "datadst.hpp"
 
 namespace coding {
 
 class Base {
 public:
-    virtual std::string encode(DataSource&) = 0;
-    virtual std::string decode(DataSource&) = 0;
+    virtual void encode(DataSrc&, DataDst&) = 0;
+    virtual void decode(DataSrc&, DataDst&) = 0;
 };
 
 }

@@ -11,8 +11,8 @@ public:
     inline static const std::string TYPE = "basic";
 
     Basic();
-    std::string encode(DataSource&) final;
-    std::string decode(DataSource&) final;
+    void encode(DataSrc&, DataDst&) final;
+    void decode(DataSrc&, DataDst&) final;
 };
 
 }
