@@ -157,7 +157,9 @@ template<uint8_t logD, typename V>
 DataType
 HuffmanTree<logD, V>::
 encode(const V value) {
-    return table.find(value)->second;
+    auto it = table.find(value);
+    assert(it != table.end());
+    return it->second;
 }
 
 template<uint8_t logD, typename V>

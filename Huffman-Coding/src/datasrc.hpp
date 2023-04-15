@@ -10,7 +10,8 @@
 class DataSrc {
     const bool stream;
     const int fd;
-    size_t datacur, datasize;
+    size_t split;
+    size_t datacur, filesize, start, end;
     uint8_t* data;
     DataType buf;
 public:
@@ -21,6 +22,10 @@ public:
     size_t remain() const;
     size_t size() const;
     void reset();
+    void back(size_t);
+
+    void resplit(size_t);
+    bool nextsplit();
 
     bool operator[](size_t) const;
     DataType read(size_t);

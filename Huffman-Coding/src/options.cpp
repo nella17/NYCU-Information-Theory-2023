@@ -15,7 +15,8 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -i, --input <file>      Set input file (default STDIN)
     -o, --output <file>     Set output file (default STDOUT)
     -b, --bits <bits>       Tread input file as <bits> data source (default 8)
-    -v, --verbose           Show debug / analysis info
+    -s, --split <size>      Split input file every <size> bytes of data (default ∞)
+    -v, --verbose           Show debug / analysis /time info
     --no-time               No show time info
 
 Coding Algorithms
@@ -25,7 +26,7 @@ Coding Algorithms
     extended    Extended Huffman Coding Algorithm
 )";
 
-const char optstring[] = "t:edi:o:b:v";
+const char optstring[] = "t:edi:o:b:s:v";
 const struct option longopts[] = {
     { "type",   required_argument,  0,  't' },
     { "encode", no_argument,        0,  'e' },
@@ -33,6 +34,7 @@ const struct option longopts[] = {
     { "input",  required_argument,  0,  'i' },
     { "output", required_argument,  0,  'o' },
     { "bits",   required_argument,  0,  'b' },
+    { "split",  required_argument,  0,  's' },
     { "verbose",no_argument,        0,  'v' },
     { "no-time",no_argument,        &opts.notime,   1  },
     { 0,        0,                  0,   0  },
@@ -82,8 +84,13 @@ void Options::parse(int argc, char* const argv[]) {
            bits = (size_t)atoi(optarg);
            break;
 
+       case 's':
+           split = (size_t)atoi(optarg);
+           break;
+
        case 'v':
            verbose = true;
+           notime = 0;
            break;
 
        default:
@@ -95,5 +102,6 @@ void Options::parse(int argc, char* const argv[]) {
     check &= encode ^ decode;
     check &= !type.empty();
     check &= type == "basic" && bits % 8 == 0;
+    check &= split == INF_SIZET or split % bits == 0;
     if (!check) USAGE();
 }

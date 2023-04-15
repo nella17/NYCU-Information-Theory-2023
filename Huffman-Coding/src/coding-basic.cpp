@@ -8,13 +8,9 @@
 #include <iomanip>
 #include <unordered_map>
 
-namespace coding {
+namespace {
 
-Basic::Basic(): Base() {}
-
-Basic::~Basic() {}
-
-void Basic::encode(DataSrc& src, DataDst& dst) {
+size_t _encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> map{};
     size_t origsize = src.size() / 8;
     size_t total = origsize / (opts.bits / 8);
@@ -34,14 +30,13 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     std::sort(freq.begin(), freq.end());
 
     auto entropy = calc_entropy(freq);
-    std::cerr << "Entropy: " << entropy << '\n'
-        << "Max compress rate: "
-            << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * ((double)opts.bits - entropy) / double(opts.bits) << "%\n"
-        << "Charset size: " << freq.size() << '\n'
-        << std::flush;
     if (opts.verbose) {
-        std::cerr << "Freq:";
+        std::cerr << "Entropy: " << entropy << '\n'
+            << "Max compress rate: "
+                << std::setw(5) << std::setprecision(2) << std::fixed
+                << 100 * ((double)opts.bits - entropy) / double(opts.bits) << "%\n"
+            << "Charset size: " << freq.size() << '\n'
+            << "Freq:";
         for (auto [c, v]: freq)
             std::cerr << ' ' << c;
         std::cerr << std::endl;
@@ -52,10 +47,12 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     auto treedata = ht.dump();
     ht.buildtable();
     timer_stop();
-    std::cerr
-        << "Tree Height: " << ht.height() << '\n'
-        << "Tree size: " << treedata.size() << '\n'
-        << std::flush;
+    if (opts.verbose) {
+        std::cerr
+            << "Tree Height: " << ht.height() << '\n'
+            << "Tree size: " << treedata.size() << '\n'
+            << std::flush;
+    }
 
     timer_start_progress("compress file");
     src.reset();
@@ -77,24 +74,29 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     dst.write(treedata);
     dst.writeint(32, origsize);
     dst.write(data);
-    dst.write(true);
+    // dst.write(true);
     timer_stop();
 
     // for (auto x: data)
     //     std::cerr << x;
     // std::cerr << std::endl;
 
-    auto csize = data.size() / 8;
-    std::cerr
-        << "Original size: " << origsize << " bytes\n"
-        << "Compressed size: " << csize << " bytes (" << data.size() << " bits)\n"
-        << "Compression rate: "
-            << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * (double)(origsize - csize) / (double)origsize << "%\n"
-        << std::flush;
+    auto csize = (data.size() + 7) / 8;
+    auto tcsize = 32 / 8 + treedata.size() / 8 + 32 / 8 + csize;
+    if (opts.verbose) {
+        std::cerr
+            << "Original size: " << origsize << " bytes\n"
+            << "Compressed size (file): " << csize << " bytes (" << data.size() << " bits)\n"
+            << "Compression rate (file): "
+                << std::setw(5) << std::setprecision(2) << std::fixed
+                << 100 * (double)((int64_t)origsize - (int64_t)csize) / (double)origsize << "%\n"
+            << std::flush;
+    }
+
+    return tcsize;
 }
 
-void Basic::decode(DataSrc& src, DataDst& dst) {
+size_t _decode(DataSrc& src, DataDst& dst) {
     size_t treesize = src.readint(32);
     auto treedata = src.readdata(treesize);
     size_t origsize = src.readint(32);
@@ -102,19 +104,27 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
     size_t datasize = src.remain();
     auto csize = datasize / 8;
 
-    std::cerr
-        << "Tree size: " << treedata.size() << '\n'
-        << "Original size: " << origsize << " bytes\n"
-        << "Compressed size: " << csize << " bytes (" << datasize << " bits)\n"
-        << std::flush;
+    if (opts.verbose) {
+        std::cerr
+            << "Tree size: " << treedata.size() << '\n'
+            << "Original size: " << origsize << " bytes\n"
+            << "Compressed size: " << csize << " bytes (" << datasize << " bits)\n"
+            << std::flush;
+    }
 
     timer_start("restore huffman tree");
     HuffmanTree ht(opts.bits, treedata);
     ht.buildtable();
     timer_stop();
-    std::cerr
-        << "Tree Height: " << ht.height() << '\n'
-        << std::flush;
+    if (opts.verbose) {
+        std::cerr
+            << "Tree Height: " << ht.height() << '\n'
+            << std::flush;
+    }
+
+    if (origsize >= 256 * 1024 * 1024) {
+        getchar();
+    }
 
     timer_start_progress("decompress file");
     Data data;
@@ -124,17 +134,59 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
         data.writeint(opts.bits, value);
         timer_progress(double(cnt) / double(total));
     }
+    src.back(data.size() - origsize * 8);
     data.resize(origsize * 8);
     timer_stop_progress();
 
     timer_start("write file");
     dst.write(data);
-    dst.write(true);
+    // dst.write(true);
     timer_stop();
 
     auto dsize = data.size() / 8;
+    if (opts.verbose) {
+        std::cerr
+            << "Decompressed size: " << dsize << " bytes\n"
+            << std::flush;
+    }
+
+    return dsize;
+}
+
+}
+
+namespace coding {
+
+Basic::Basic(): Base() {}
+
+Basic::~Basic() {}
+
+void Basic::encode(DataSrc& src, DataDst& dst) {
+    size_t total = src.size() / 8, csize = 0;
+    src.resplit(opts.split);
+    do {
+        csize += _encode(src, dst);
+    } while (src.nextsplit());
     std::cerr
-        << "Decompressed size: " << dsize << " bytes\n"
+        << "Input size: " << total << " bytes\n"
+        << "Output size: " << csize << " bytes\n"
+        << "Compression rate: "
+            << std::setw(5) << std::setprecision(2) << std::fixed
+            << 100 * (double)((int64_t)total - (int64_t)csize) / (double)total << "%\n"
+        << std::flush;
+}
+
+void Basic::decode(DataSrc& src, DataDst& dst) {
+    size_t total = 0, csize = src.size() / 8;
+    do {
+        total += _decode(src, dst);
+    } while (src.remain() >= 64);
+    std::cerr
+        << "Input size: " << csize << " bytes\n"
+        << "Outptu size: " << total << " bytes\n"
+        << "Compression rate: "
+            << std::setw(5) << std::setprecision(2) << std::fixed
+            << 100 * (double)((int64_t)total - (int64_t)csize) / (double)total << "%\n"
         << std::flush;
 }
 

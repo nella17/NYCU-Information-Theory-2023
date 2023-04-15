@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <string>
+#include <limits>
+
+#include "utils.hpp"
 
 #define USAGE() \
     do { \
@@ -16,9 +19,9 @@ class Options {
 public:
     std::string type;
     bool encode = false, decode = false, stream = true, verbose = false;
-    int notime = 0;
+    int notime = 1;
     int input_fd = STDIN_FILENO, output_fd = STDOUT_FILENO;
-    size_t bits = 8;
+    size_t bits = 8, split = INF_SIZET;
 
     void parse(int argc, char* const argv[]);
 };

@@ -1,9 +1,13 @@
+#pragma once
+
 #include <unistd.h>
 
 #include <cmath>
 #include <bitset>
 #include <string>
 #include <vector>
+
+constexpr auto INF_SIZET = std::numeric_limits<size_t>::max();
 
 // TODO: d-ary
 using DataType = std::basic_string<bool>;
