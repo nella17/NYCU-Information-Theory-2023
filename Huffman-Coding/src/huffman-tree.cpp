@@ -38,14 +38,16 @@ HuffmanTree(size_t _b, const std::vector<std::pair<size_t, V>>& freq):
     bits(_b), root(0), nodes(1)
 {
     nodes.reserve(freq.size() * 2);
+    std::vector<size_t> idxs{};
+    idxs.reserve(freq.size());
+    for (const auto& [c, v]: freq)
+        idxs.emplace_back(newNode(c, v));
     auto cmp = [&](size_t a, size_t b) {
         if (nodes[a].freq != nodes[b].freq)
             return nodes[a].freq > nodes[b].freq;
         return a > b;
     };
-    std::priority_queue<size_t, std::vector<size_t>, decltype(cmp)> pq(cmp);
-    for (const auto& [c, v]: freq)
-        pq.emplace(newNode(c, v));
+    std::priority_queue<size_t, std::vector<size_t>, decltype(cmp)> pq(idxs.begin(), idxs.end(), cmp);
     while (true) {
         auto next = pq.size() > D ? newNode() : root;
         for (size_t i = 0; i < D and !pq.empty(); i++) {
