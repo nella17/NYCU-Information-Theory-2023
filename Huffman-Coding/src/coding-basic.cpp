@@ -74,7 +74,7 @@ size_t _encode(DataSrc& src, DataDst& dst) {
     dst.write(treedata);
     dst.writeint(32, origsize);
     dst.write(data);
-    // dst.write(true);
+    dst.write(false);
     timer_stop();
 
     // for (auto x: data)
@@ -140,7 +140,7 @@ size_t _decode(DataSrc& src, DataDst& dst) {
 
     timer_start("write file");
     dst.write(data);
-    // dst.write(true);
+    dst.write(false);
     timer_stop();
 
     auto dsize = data.size() / 8;
