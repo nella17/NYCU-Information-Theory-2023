@@ -18,6 +18,7 @@ public:
     bool eof() const;
     size_t remain() const;
     size_t size() const;
+    void resize(size_t);
     void reset();
     void clear();
 

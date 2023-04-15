@@ -62,6 +62,7 @@ void DataSrc::reset() {
 
 bool DataSrc::operator[](size_t idx) const {
     if (!stream) {
+        if (idx >= datasize) return 0;
         return (data[idx / 8] >> (7 - idx % 8)) & 1;
     } else {
         assert(false);

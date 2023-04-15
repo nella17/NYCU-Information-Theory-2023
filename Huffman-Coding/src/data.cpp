@@ -17,6 +17,11 @@ size_t Data::size() const {
     return datasize;
 }
 
+void Data::resize(size_t size) {
+    datasize = size;
+    data.resize((size + 7) / 8);
+}
+
 void Data::reset() {
     datacur = 0;
 }

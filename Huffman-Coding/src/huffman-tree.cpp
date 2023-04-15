@@ -141,7 +141,7 @@ buildtable() {
     };
     dfs(root);
     if (0) {
-        std::cerr << "dump table" << std::endl;
+        std::cerr << "\n\ndump table" << std::endl;
         std::vector<std::pair<V, DataType>> v(table.begin(), table.end());
         std::sort(v.begin(), v.end());
         for(auto [x, y]: v) {
@@ -167,6 +167,7 @@ decode(DataSrc& src) {
     auto idx = root;
     while (!nodes[idx].end) {
         auto b =  src.readint(logD);
+        // std::cerr << b;
         idx = nodes[idx].cls[b];
     }
     return nodes[idx].value;

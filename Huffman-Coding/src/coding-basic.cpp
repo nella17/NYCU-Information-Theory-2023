@@ -80,6 +80,10 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     dst.write(true);
     timer_stop();
 
+    // for (auto x: data)
+    //     std::cerr << x;
+    // std::cerr << std::endl;
+
     auto csize = data.size() / 8;
     std::cerr
         << "Original size: " << origsize << " bytes\n"
@@ -96,7 +100,7 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
     size_t origsize = src.readint(32);
     size_t total = origsize / (opts.bits / 8);
     size_t datasize = src.remain();
-    auto csize = datasize / int64_t(8);
+    auto csize = datasize / 8;
 
     std::cerr
         << "Tree size: " << treedata.size() << '\n'
@@ -114,11 +118,13 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
 
     timer_start_progress("decompress file");
     Data data;
-    for (size_t cnt = 0; cnt < total and !src.eof(); cnt++) {
+    for (size_t cnt = 0; data.size() / 8 < origsize and !src.eof(); cnt++) {
         auto value = ht.decode(src);
+        // std::cerr << " -> " << std::hex << value << std::endl;
         data.writeint(opts.bits, value);
         timer_progress(double(cnt) / double(total));
     }
+    data.resize(origsize * 8);
     timer_stop_progress();
 
     timer_start("write file");
@@ -126,7 +132,7 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
     dst.write(true);
     timer_stop();
 
-    auto dsize = data.size() / int64_t(8);
+    auto dsize = data.size() / 8;
     std::cerr
         << "Decompressed size: " << dsize << " bytes\n"
         << std::flush;
