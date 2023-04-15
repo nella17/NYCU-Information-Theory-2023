@@ -6,19 +6,18 @@
 
 #include "options.hpp"
 #include "utils.hpp"
-#include "data.hpp"
 
 class DataSource {
     const bool stream;
+    size_t datacur, datasize;
+    uint8_t* data;
     DataType remain;
-    Data data;
 public:
 
     DataSource();
 
     bool empty() const;
     void reset();
-    void clear();
 
     bool operator[](size_t) const;
     DataType read(size_t);
