@@ -36,7 +36,7 @@ void DataDst::write(const DataType& data) {
     }
     if (i < sz) {
         buf.push_back(0);
-        for (; i < sz and size % 8; i++, size++)
+        for (; i < sz; i++, size++)
             buf.back() |= uint8_t(data[i] << (7 - size % 8));
     }
     write();
