@@ -36,7 +36,7 @@ void timer_progress(double p) {
         std::chrono::duration<double> elapsed_seconds = end - start;
         auto cnt = elapsed_seconds.count();
         progress = p;
-        size = snprintf(buf, sizeof(buf), "%.2f%% %.2fs", progress, cnt);
+        size = snprintf(buf, sizeof(buf), "%.1f%% %.2fs", progress, cnt);
         if (!opts.notime) std::cerr << buf << std::flush;
     }
 }
