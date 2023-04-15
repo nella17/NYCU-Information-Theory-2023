@@ -26,7 +26,7 @@ void DataDst::write(const DataType& data) {
     size_t i = 0, sz = data.size();
     uint8_t t;
     if (size % 8) {
-        for (t = 0; i < sz and size % 8; i++)
+        for (t = 0; i < sz and size % 8; i++, size++)
             t = uint8_t(t << 1) | (uint8_t)data[i];
         writeint(i, t, false);
     }
