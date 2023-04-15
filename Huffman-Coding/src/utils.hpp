@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 
+// TODO: d-ary
 using DataType = std::basic_string<bool>;
 using CharValue = std::bitset<8>;
 

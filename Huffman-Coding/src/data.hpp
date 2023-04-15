@@ -5,17 +5,17 @@
 #include <bitset>
 #include <string>
 
-using DataType = std::basic_string<bool>;
+#include "utils.hpp"
 
 class Data {
-public:
-    using Value = std::bitset<8>;
-
-    size_t cur, size;
+    size_t datacur, datasize;
     std::basic_string<uint8_t> data;
-
+public:
     Data(std::string = "");
 
+    bool eof() const;
+    size_t remain() const;
+    size_t size() const;
     void reset();
     void clear();
 
@@ -25,7 +25,6 @@ public:
 
     uint64_t readint(size_t);
 
-    void push(const bool);
-    Data& operator+=(const Data&);
-    Data& operator+=(const DataType&);
+    void write(const DataType&);
+    void writeint(size_t, uint64_t);
 };

@@ -4,19 +4,19 @@
 #include <vector>
 #include <string>
 
-#include "options.hpp"
 #include "utils.hpp"
 
 class DataSrc {
     const bool stream;
+    const int fd;
     size_t datacur, datasize;
     uint8_t* data;
     DataType remain;
 public:
 
-    DataSrc();
+    DataSrc(bool, int);
 
-    bool empty() const;
+    bool eof() const;
     void reset();
 
     bool operator[](size_t) const;

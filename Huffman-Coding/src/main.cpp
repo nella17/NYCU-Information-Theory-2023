@@ -21,8 +21,8 @@ signed main(int argc, char* const argv[]) {
     auto func = coding::make();
     if (!func) USAGE();
 
-    DataSrc src;
-    DataDst dst;
+    DataSrc src(opts.stream, opts.input_fd);
+    DataDst dst(opts.output_fd);
 
     if (opts.encode) {
         func->encode(src, dst);

@@ -4,13 +4,19 @@
 #include <vector>
 #include <string>
 
-#include "options.hpp"
+#include "data.hpp"
 #include "utils.hpp"
 
 class DataDst {
+    const int fd;
+    size_t size;
+    std::basic_string<uint8_t> buf;
 public:
-    DataDst();
+    DataDst(int);
+    ~DataDst();
 
+    void write(bool = false);
     void write(const DataType&);
-    void writeint(uint64_t, size_t);
+    void write(Data&&);
+    void writeint(size_t, uint64_t, bool = true);
 };
