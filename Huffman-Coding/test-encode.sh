@@ -10,6 +10,10 @@ make -j build
   $ARGS -e \
   -i ./test.png -o "./test.png.${name}.enc"
 
+if [ "$T" == 1 ]; then
+  exit 0
+fi
+
 ./bin/release/huffman-coding.exe \
   $ARGS -e \
   -i ./alexnet.pth -o "./alexnet.pth.${name}.enc"
