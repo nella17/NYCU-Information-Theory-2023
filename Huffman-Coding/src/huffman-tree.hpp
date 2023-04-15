@@ -21,7 +21,7 @@ public:
             V value;
             std::array<NodePtr, D> cls;
         };
-        Node(size_t = 0, size_t = 1);
+        Node();
         Node(size_t, V);
     };
 

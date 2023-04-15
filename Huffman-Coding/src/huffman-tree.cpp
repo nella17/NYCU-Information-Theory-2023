@@ -6,6 +6,7 @@
 #include <queue>
 
 #include "options.hpp"
+#include "utils.hpp"
 
 template<size_t D, typename V>
 bool
@@ -18,7 +19,7 @@ NodePtrCmp::operator()(NodePtr a, NodePtr b) {
 
 template<size_t D, typename V>
 HuffmanTree<D, V>::HuffmanTree::
-Node::Node(size_t f, size_t h): end(false), freq(f), height(h) {}
+Node::Node(): end(false), freq(0), height(0) {}
 
 template<size_t D, typename V>
 HuffmanTree<D, V>::HuffmanTree::
