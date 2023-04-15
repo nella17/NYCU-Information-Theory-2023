@@ -32,12 +32,12 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     std::sort(freq.begin(), freq.end());
 
     auto entropy = calc_entropy(freq);
-    std::cerr << "entropy: " << entropy << '\n'
-        << "max compress rate: " << entropy / double(opts.bits) << '\n'
-        << "charset size: " << freq.size() << '\n'
+    std::cerr << "Entropy: " << entropy << '\n'
+        << "Max compress rate: " << (entropy - (double)opts.bits) / double(opts.bits) << '\n'
+        << "Charset size: " << freq.size() << '\n'
         << std::flush;
     if (opts.verbose) {
-        std::cerr << "freq:";
+        std::cerr << "Freq:";
         for (auto [c, v]: freq)
             std::cerr << ' ' << c;
         std::cerr << std::endl;
@@ -49,21 +49,26 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 
     ht.buildtable();
 
-    dst.writeint(32, total);
-
     timer_start_progress("compress file");
     src.reset();
-    size_t size = 0;
+    DataType encode;
     for (size_t cnt = 0; src.eof(); cnt++) {
         uint64_t value = src.readint(opts.bits);
         auto code = ht.encode(value);
-        size += code.size();
-        dst.write(code);
+        encode.insert(
+            encode.end(),
+            code.begin(),
+            code.end()
+        );
         timer_progress(double(cnt) / double(total));
     }
     timer_stop_progress();
 
-   auto origsize = int64_t(total) * int64_t(opts.bits);
+    dst.writeint(32, total);
+    dst.write(encode);
+
+    auto origsize = int64_t(total) * int64_t(opts.bits);
+    auto size = encode.size();
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << "Compressed size: " << size << " bytes\n"

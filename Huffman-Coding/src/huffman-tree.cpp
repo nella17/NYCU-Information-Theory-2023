@@ -107,9 +107,7 @@ template<uint8_t D, typename V>
 DataType
 HuffmanTree<D, V>::
 encode(const V value) {
-    if (table.empty()) buildtable();
-    auto it = table.find(value);
-    return it != table.end() ? it->second : DataType();
+    return table.find(value)->second;
 }
 
 template class HuffmanTree<2, uint64_t>;
