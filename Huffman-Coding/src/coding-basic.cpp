@@ -86,7 +86,14 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
         << std::flush;
 }
 
-void Basic::decode(DataSrc& /* src */, DataDst& /* dst */) {
+void Basic::decode(DataSrc& src, DataDst& dst) {
+    auto treedata = src.readdata();
+    auto total = src.readint(32);
+
+    auto origsize = int64_t(total) * int64_t(opts.bits) / int64_t(8);
+    std::cerr
+        << "Original size: " << origsize << " bytes\n"
+        << std::flush;
 }
 
 }

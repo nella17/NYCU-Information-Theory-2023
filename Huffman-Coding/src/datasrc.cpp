@@ -79,6 +79,20 @@ DataType DataSrc::read(size_t pos, size_t bits) const {
     }
 }
 
+Data DataSrc::readdata() {
+    Data ret;
+    const auto size = ret.datasize = (size_t)readint(32);
+    size_t i = 0;
+    for (; i+8 <= size; i += 8)
+        ret.data.push_back( (uint8_t)readint(8) );
+    if (i < size) {
+        auto x = size - i;
+        auto v = (uint8_t)readint(x) << (8 - x);
+        ret.data.push_back((uint8_t)v);
+    }
+    return ret;
+}
+
 uint64_t DataSrc::readint(size_t bits) {
     if (!stream) {
         uint64_t ret = 0;

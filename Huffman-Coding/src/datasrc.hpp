@@ -4,6 +4,7 @@
 #include <vector>
 #include <string>
 
+#include "data.hpp"
 #include "utils.hpp"
 
 class DataSrc {
@@ -23,6 +24,8 @@ public:
     bool operator[](size_t) const;
     DataType read(size_t);
     DataType read(size_t, size_t) const;
+
+    Data readdata();
 
     uint64_t readint(size_t);
 };

@@ -8,6 +8,8 @@
 #include "utils.hpp"
 
 class Data {
+    friend class DataSrc;
+
     size_t datacur, datasize;
     std::basic_string<uint8_t> data;
 public:
