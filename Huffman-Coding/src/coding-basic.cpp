@@ -11,6 +11,8 @@ namespace coding {
 
 Basic::Basic(): Base() {}
 
+Basic::~Basic() {}
+
 void Basic::encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> map{};
     size_t total = 0;
