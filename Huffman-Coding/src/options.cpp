@@ -16,6 +16,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -o, --output <file>     Set output file (default STDOUT)
     -b, --bits <bits>       Tread input file as <bits> data source (default 8)
     -v, --verbose           Show debug / analysis info
+    --no-time               No show time info
 
 Coding Algorithms
     analysis    Analysis input file
@@ -33,6 +34,7 @@ const struct option longopts[] = {
     { "output", required_argument,  0,  'o' },
     { "bits",   required_argument,  0,  'b' },
     { "verbose",no_argument,        0,  'v' },
+    { "no-time",no_argument,        &opts.notime,   1  },
     { 0,        0,                  0,   0  },
 };
 
@@ -45,6 +47,9 @@ void Options::parse(int argc, char* const argv[]) {
            break;
 
        switch (c) {
+       case 0:
+           break;
+
        case 't':
            type = optarg;
            if (type == "basic")

@@ -8,14 +8,14 @@
 
 auto start = std::chrono::steady_clock::now();
 void timer_start(std::string s) {
-    std::cerr << "[timer] " << s << " ... " << std::flush;
+    if (!opts.notime) std::cerr << "[timer] " << s << " ... " << std::flush;
     start = std::chrono::steady_clock::now();
 }
 double timer_stop() {
     auto end = std::chrono::steady_clock::now();
     std::chrono::duration<double> elapsed_seconds = end - start;
     auto cnt = elapsed_seconds.count();
-    std::cerr << std::fixed << std::setprecision(2) << cnt << "s" << std::endl;
+    if (!opts.notime) std::cerr << std::fixed << std::setprecision(2) << cnt << "s" << std::endl;
     return cnt;
 }
 
@@ -25,23 +25,23 @@ void timer_start_progress(std::string s) {
     timer_start(s);
     progress = 0;
     size = 4;
-    std::cerr << "0.0%" << std::flush;
+    if (!opts.notime) std::cerr << "0.0%" << std::flush;
 }
 void timer_progress(double p) {
     p *= 100;
     if (p - progress >= 0.1) {
-        std::cerr << std::string((size_t)size, '\b') << std::flush;
+        if (!opts.notime) std::cerr << std::string((size_t)size, '\b') << std::flush;
         char buf[16];
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
         auto cnt = elapsed_seconds.count();
         progress = p;
         size = snprintf(buf, sizeof(buf), "%.2f%% %.2fs", progress, cnt);
-        std::cerr << buf << std::flush;
+        if (!opts.notime) std::cerr << buf << std::flush;
     }
 }
 double timer_stop_progress() {
-    std::cerr
+    if (!opts.notime) std::cerr
         << std::string((size_t)size, '\b')
         << std::string((size_t)size, ' ')
         << std::string((size_t)size, '\b')

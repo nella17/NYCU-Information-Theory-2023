@@ -16,6 +16,7 @@ class Options {
 public:
     std::string type;
     bool encode = false, decode = false, stream = true, verbose = false;
+    int notime = 0;
     int input_fd = STDIN_FILENO, output_fd = STDOUT_FILENO;
     size_t bits = 8;
 
