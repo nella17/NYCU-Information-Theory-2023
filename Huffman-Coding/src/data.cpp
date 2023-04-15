@@ -6,7 +6,7 @@
 Data::Data(std::string s): datacur(0), datasize(s.size() * 8), data(s.begin(), s.end()) {}
 
 bool Data::eof() const {
-    return datacur <= datasize;
+    return datacur >= datasize;
 }
 
 size_t Data::remain() const {

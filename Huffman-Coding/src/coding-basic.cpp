@@ -20,7 +20,7 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     size_t total = origsize / (opts.bits / 8);
 
     timer_start_progress("calculate pmf");
-    for (size_t cnt = 0; src.eof(); cnt++) {
+    for (size_t cnt = 0; !src.eof(); cnt++) {
         uint64_t value = src.readint(opts.bits);
         map[value] += 1;
         timer_progress(double(cnt) / double(total));
@@ -59,12 +59,12 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 
     timer_start_progress("compress file");
     src.reset();
-    DataType encode;
-    for (size_t cnt = 0; src.eof(); cnt++) {
+    DataType data;
+    for (size_t cnt = 0; !src.eof(); cnt++) {
         uint64_t value = src.readint(opts.bits);
         auto code = ht.encode(value);
-        encode.insert(
-            encode.end(),
+        data.insert(
+            data.end(),
             code.begin(),
             code.end()
         );
@@ -73,13 +73,14 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     timer_stop_progress();
 
     timer_start("write file");
+    dst.writeint(32, treedata.size());
     dst.write(treedata);
     dst.writeint(32, origsize);
-    dst.write(encode);
+    dst.write(data);
     dst.write(true);
     timer_stop();
 
-    auto size = encode.size() / int64_t(8);
+    auto size = data.size() / int64_t(8);
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << "Compressed size: " << size << " bytes\n"
@@ -90,7 +91,8 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 }
 
 void Basic::decode(DataSrc& src, DataDst& dst) {
-    auto treedata = src.readdata();
+    size_t treesize = src.readint(32);
+    auto treedata = src.readdata(treesize);
     size_t origsize = src.readint(32);
     size_t total = origsize / (opts.bits / 8);
 

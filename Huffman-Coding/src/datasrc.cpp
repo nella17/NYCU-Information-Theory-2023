@@ -20,13 +20,16 @@ DataSrc::DataSrc(bool _s, int _fd):
         auto pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
         auto mapsize = (size + pagesize - 1) & (~(pagesize-1));
         data = (uint8_t*)mmap(NULL, mapsize, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
-        if ((long)data < 0) perror("mmap");
+        if ((long)data < 0) {
+            perror("mmap");
+            exit(EXIT_FAILURE);
+        }
     }
 }
 
 bool DataSrc::eof() const {
     if (!stream) {
-        return datacur < datasize;
+        return datacur >= datasize;
     } else {
         // TODO
         assert(!(bool)"TODO");
@@ -79,9 +82,9 @@ DataType DataSrc::read(size_t pos, size_t bits) const {
     }
 }
 
-Data DataSrc::readdata() {
+Data DataSrc::readdata(const size_t size) {
     Data ret;
-    const auto size = ret.datasize = (size_t)readint(32);
+    ret.datasize = size;
     size_t i = 0;
     for (; i+8 <= size; i += 8)
         ret.data.push_back( (uint8_t)readint(8) );

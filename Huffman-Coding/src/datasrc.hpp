@@ -25,7 +25,7 @@ public:
     DataType read(size_t);
     DataType read(size_t, size_t) const;
 
-    Data readdata();
+    Data readdata(const size_t);
 
     uint64_t readint(size_t);
 };

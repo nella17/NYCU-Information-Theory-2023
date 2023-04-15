@@ -44,7 +44,6 @@ void DataDst::write(const DataType& data) {
 
 void DataDst::write(Data& data) {
     data.reset();
-    writeint(32, data.size(), false);
     if (size % 8) {
         auto x = 8 - size % 8;
         writeint(x, data.readint(x), false);
