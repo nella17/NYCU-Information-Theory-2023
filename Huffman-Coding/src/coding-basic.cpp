@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <iostream>
+#include <iomanip>
 #include <unordered_map>
 
 namespace coding {
@@ -33,7 +34,9 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 
     auto entropy = calc_entropy(freq);
     std::cerr << "Entropy: " << entropy << '\n'
-        << "Max compress rate: " << (entropy - (double)opts.bits) / double(opts.bits) << '\n'
+        << "Max compress rate: "
+            << std::setw(5) << std::setprecision(2) << std::fixed
+            << 100 * ((double)opts.bits - entropy) / double(opts.bits) << "%\n"
         << "Charset size: " << freq.size() << '\n'
         << std::flush;
     if (opts.verbose) {
@@ -64,15 +67,19 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     }
     timer_stop_progress();
 
+    timer_start("write file");
     dst.writeint(32, total);
     dst.write(encode);
+    timer_stop();
 
     auto origsize = int64_t(total) * int64_t(opts.bits);
     auto size = encode.size();
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << "Compressed size: " << size << " bytes\n"
-        << "Compression rate: " << (double)(origsize - (int64_t)size) / (double)origsize << '\n'
+        << "Compression rate: "
+            << std::setw(5) << std::setprecision(2) << std::fixed
+            << 100 * (double)(origsize - (int64_t)size) / (double)origsize << "%\n"
         << std::flush;
 }
 
