@@ -1,3 +1,3 @@
 #!/bin/bash
-export ARGS="-t basic -e -b 8"
+export ARGS="-t basic -b 8"
 export name="basic"
