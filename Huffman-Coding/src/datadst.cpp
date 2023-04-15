@@ -49,7 +49,7 @@ void DataDst::write(Data& data) {
         auto x = 8 - size % 8;
         writeint(x, data.readint(x), false);
     }
-    while (data.remain() >= 8)
+    for (; data.remain() >= 8; size += 8)
         buf.push_back((uint8_t)data.readint(8));
     auto r = data.remain();
     if (r)

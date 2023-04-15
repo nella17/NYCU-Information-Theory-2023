@@ -16,7 +16,7 @@ Basic::~Basic() {}
 
 void Basic::encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> map{};
-    auto origsize = src.size() / 8;
+    size_t origsize = src.size() / 8;
     size_t total = origsize / (opts.bits / 8);
 
     timer_start_progress("calculate pmf");
@@ -52,7 +52,10 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     auto treedata = ht.dump();
     ht.buildtable();
     timer_stop();
-    std::cerr << "Tree Height: " << ht.height() << std::endl;
+    std::cerr
+        << "Tree Height: " << ht.height() << '\n'
+        << "Tree size: " << treedata.size() << '\n'
+        << std::flush;
 
     timer_start_progress("compress file");
     src.reset();
@@ -88,10 +91,11 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 
 void Basic::decode(DataSrc& src, DataDst& dst) {
     auto treedata = src.readdata();
-    auto origsize = src.readint(32);
+    size_t origsize = src.readint(32);
     size_t total = origsize / (opts.bits / 8);
 
     std::cerr
+        << "Tree size: " << treedata.size() << '\n'
         << "Original size: " << origsize << " bytes\n"
         << std::flush;
 }
