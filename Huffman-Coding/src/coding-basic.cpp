@@ -16,7 +16,8 @@ Basic::~Basic() {}
 
 void Basic::encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> map{};
-    size_t total = src.size() / opts.bits;
+    auto origsize = src.size() / 8;
+    size_t total = origsize / (opts.bits / 8);
 
     timer_start_progress("calculate pmf");
     for (size_t cnt = 0; src.eof(); cnt++) {
@@ -70,27 +71,26 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
 
     timer_start("write file");
     dst.write(treedata);
-    dst.writeint(32, total);
+    dst.writeint(32, origsize);
     dst.write(encode);
     dst.write(true);
     timer_stop();
 
-    auto origsize = int64_t(total) * int64_t(opts.bits) / int64_t(8);
     auto size = encode.size() / int64_t(8);
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << "Compressed size: " << size << " bytes\n"
         << "Compression rate: "
             << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * (double)(origsize - (int64_t)size) / (double)origsize << "%\n"
+            << 100 * (double)(origsize - size) / (double)origsize << "%\n"
         << std::flush;
 }
 
 void Basic::decode(DataSrc& src, DataDst& dst) {
     auto treedata = src.readdata();
-    auto total = src.readint(32);
+    auto origsize = src.readint(32);
+    size_t total = origsize / (opts.bits / 8);
 
-    auto origsize = int64_t(total) * int64_t(opts.bits) / int64_t(8);
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << std::flush;
