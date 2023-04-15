@@ -21,8 +21,11 @@ std::string Basic::encode(DataSource& src) {
     }
     timer_stop();
 
-    std::cerr << "entropy: " << calc_entropy(freq) << std::endl;
-    std::cerr << "rate: " << calc_entropy(freq) / double(bits) << std::endl;
+    if (opts.verbose) {
+        auto entropy = calc_entropy(freq);
+        std::cerr << "entropy: " << entropy << '\n'
+            << "rate: " << entropy / double(opts.bits) << std::endl;
+    }
 
     return "";
 }

@@ -12,15 +12,17 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -d, --decode            Decode
     -i, --input <file>      Set input file (default STDIN)
     -o, --output <file>     Set output file (default STDOUT)
-    -b, --bits <bits>       Tread input file as <bits> data source (default 8) (mutiple of 8 only)
+    -b, --bits <bits>       Tread input file as <bits> data source (default 8)
+    -v, --verbose           Show debug / analysis info
 
 Coding Algorithms
-    basic       Basic Huffman Coding Algorithm
+    analysis    Analysis input file
+    basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
     adaptive    Adaptive Huffman Coding Algorithm
     extended    Extended Huffman Coding Algorithm
 )";
 
-const char optstring[] = "t:edi:o:b:";
+const char optstring[] = "t:edi:o:b:v";
 const struct option longopts[] = {
     { "type",   required_argument,  0,  't' },
     { "encode", no_argument,        0,  'e' },
@@ -28,6 +30,7 @@ const struct option longopts[] = {
     { "input",  required_argument,  0,  'i' },
     { "output", required_argument,  0,  'o' },
     { "bits",   required_argument,  0,  'b' },
+    { "verbose",no_argument,        0,  'v' },
     { 0,        0,                  0,   0  },
 };
 
@@ -70,7 +73,10 @@ void Options::parse(int argc, char* const argv[]) {
 
        case 'b':
            bits = (size_t)atoi(optarg);
-           if (bits % 8) USAGE();
+           break;
+
+       case 'v':
+           verbose = true;
            break;
 
        default:
@@ -78,5 +84,9 @@ void Options::parse(int argc, char* const argv[]) {
        }
     }
 
-    if (!(encode ^ decode) or type.empty()) USAGE();
+    bool check = true;
+    check &= encode ^ decode;
+    check &= !type.empty();
+    check &= type == "basic" && bits % 8 == 0;
+    if (!check) USAGE();
 }
