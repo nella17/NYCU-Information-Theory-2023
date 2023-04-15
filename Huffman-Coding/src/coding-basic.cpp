@@ -1,7 +1,9 @@
 #include "coding-basic.hpp"
 
 #include "options.hpp"
+#include "huffman-tree.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <unordered_map>
 
@@ -30,11 +32,17 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     if (opts.verbose) {
         auto entropy = calc_entropy(freq);
         std::cerr << "entropy: " << entropy << '\n'
-            << "rate: " << entropy / double(opts.bits) << '\n'
+            << "max compress rate: " << entropy / double(opts.bits) << '\n'
+            << "charset size: " << freq.size() << '\n'
             << "freq:";
         for (auto [c, v]: freq)
             std::cerr << ' ' << c;
         std::cerr << std::endl;
+    }
+
+    HuffmanTree ht(freq);
+    if (opts.verbose) {
+        std::cerr << "Tree Height: " << ht.height() << std::endl;
     }
 }
 
