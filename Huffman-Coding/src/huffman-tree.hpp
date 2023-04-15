@@ -23,6 +23,7 @@ public:
         size_t freq, height;
         union {
             V value;
+            // TODO: NodePtr -> size_t
             std::array<NodePtr, D> cls;
         };
         Node();

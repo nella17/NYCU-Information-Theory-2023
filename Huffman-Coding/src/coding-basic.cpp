@@ -46,11 +46,12 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
         std::cerr << std::endl;
     }
 
+    timer_start("build huffman tree & table");
     HuffmanTree ht(opts.bits, freq);
-    std::cerr << "Tree Height: " << ht.height() << std::endl;
-    dst.write(ht.dump());
-
+    auto treedata = ht.dump();
     ht.buildtable();
+    timer_stop();
+    std::cerr << "Tree Height: " << ht.height() << std::endl;
 
     timer_start_progress("compress file");
     src.reset();
@@ -68,12 +69,14 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     timer_stop_progress();
 
     timer_start("write file");
+    dst.write(treedata);
     dst.writeint(32, total);
     dst.write(encode);
+    dst.write(true);
     timer_stop();
 
-    auto origsize = int64_t(total) * int64_t(opts.bits);
-    auto size = encode.size();
+    auto origsize = int64_t(total) * int64_t(opts.bits) / int64_t(8);
+    auto size = encode.size() / int64_t(8);
     std::cerr
         << "Original size: " << origsize << " bytes\n"
         << "Compressed size: " << size << " bytes\n"

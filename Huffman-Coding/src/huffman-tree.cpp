@@ -28,7 +28,6 @@ HuffmanTree<D, V>::
 HuffmanTree(size_t b, const std::vector<std::pair<size_t, V>>& freq):
     bits(b)
 {
-    timer_start("build HuffmanTree");
     std::priority_queue<NodePtr, std::vector<NodePtr>, NodePtrCmp> pq{};
     for (const auto& [c, v]: freq)
         pq.emplace(new Node(c, v));
@@ -43,7 +42,6 @@ HuffmanTree(size_t b, const std::vector<std::pair<size_t, V>>& freq):
         pq.emplace(n);
     }
     root = pq.top(); pq.pop();
-    timer_stop();
 }
 
 template<uint8_t D, typename V>
@@ -82,7 +80,6 @@ void
 HuffmanTree<D, V>::
 buildtable() {
     table.clear();
-    timer_start("build table");
     DataType dt{};
     std::function<void(NodePtr)> dfs;
     dfs = [&](NodePtr it) {
@@ -100,7 +97,6 @@ buildtable() {
         }
     };
     dfs(root);
-    timer_stop();
 }
 
 template<uint8_t D, typename V>

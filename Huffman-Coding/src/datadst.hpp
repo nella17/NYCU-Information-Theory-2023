@@ -17,6 +17,6 @@ public:
 
     void write(bool = false);
     void write(const DataType&);
-    void write(Data&&);
+    void write(Data&);
     void writeint(size_t, uint64_t, bool = true);
 };

@@ -24,28 +24,25 @@ void DataDst::write(bool all) {
 
 void DataDst::write(const DataType& data) {
     size_t i = 0, sz = data.size();
-    uint8_t t;
     if (size % 8) {
-        for (t = 0; i < sz and size % 8; i++, size++)
-            t = uint8_t(t << 1) | (uint8_t)data[i];
-        writeint(i, t, false);
+        for (; i < sz and size % 8; i++, size++)
+            buf.back() |= uint8_t(data[i] << (7 - size % 8));
     }
     for (; i+8 <= sz; i += 8, size += 8) {
-        t = 0;
+        uint8_t t = 0;
         for (size_t j = 0; j < 8; j++)
             t = uint8_t(t << 1) | (uint8_t)data[i+j];
-        writeint(8, t, false);
+        buf.push_back(t);
     }
     if (i < sz) {
-        auto r = sz - i;
-        for (t = 0; i < sz and size % 8; i++)
-            t = uint8_t(t << 1) | (uint8_t)data[i];
-        writeint(r, t, false);
+        buf.push_back(0);
+        for (; i < sz and size % 8; i++, size++)
+            buf.back() |= uint8_t(data[i] << (7 - size % 8));
     }
     write();
 }
 
-void DataDst::write(Data&& data) {
+void DataDst::write(Data& data) {
     data.reset();
     writeint(32, data.size(), false);
     if (size % 8) {
