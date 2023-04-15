@@ -8,9 +8,13 @@
 #include <iomanip>
 #include <unordered_map>
 
-namespace {
+namespace coding {
 
-size_t _encode(DataSrc& src, DataDst& dst) {
+Basic::Basic(): Base() {}
+
+Basic::~Basic() {}
+
+size_t Basic::encode(DataSrc& src, DataDst& dst) {
     std::unordered_map<uint64_t, size_t> map{};
     size_t origsize = src.size() / 8;
     size_t total = origsize / (opts.bits / 8);
@@ -96,7 +100,7 @@ size_t _encode(DataSrc& src, DataDst& dst) {
     return tcsize;
 }
 
-size_t _decode(DataSrc& src, DataDst& dst) {
+size_t Basic::decode(DataSrc& src, DataDst& dst) {
     size_t treesize = src.readint(32);
     auto treedata = src.readdata(treesize);
     size_t origsize = src.readint(32);
@@ -151,43 +155,6 @@ size_t _decode(DataSrc& src, DataDst& dst) {
     }
 
     return dsize;
-}
-
-}
-
-namespace coding {
-
-Basic::Basic(): Base() {}
-
-Basic::~Basic() {}
-
-void Basic::encode(DataSrc& src, DataDst& dst) {
-    size_t total = src.size() / 8, csize = 0;
-    src.resplit(opts.split);
-    do {
-        csize += _encode(src, dst);
-    } while (src.nextsplit());
-    std::cerr
-        << "Input size: " << total << " bytes\n"
-        << "Output size: " << csize << " bytes\n"
-        << "Compression rate: "
-            << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * (double)((int64_t)total - (int64_t)csize) / (double)total << "%\n"
-        << std::flush;
-}
-
-void Basic::decode(DataSrc& src, DataDst& dst) {
-    size_t total = 0, csize = src.size() / 8;
-    do {
-        total += _decode(src, dst);
-    } while (src.remain() >= 64);
-    std::cerr
-        << "Input size: " << csize << " bytes\n"
-        << "Outptu size: " << total << " bytes\n"
-        << "Compression rate: "
-            << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * (double)((int64_t)total - (int64_t)csize) / (double)total << "%\n"
-        << std::flush;
 }
 
 }

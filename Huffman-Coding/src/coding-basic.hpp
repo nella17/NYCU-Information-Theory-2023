@@ -12,8 +12,8 @@ public:
 
     Basic();
     ~Basic();
-    void encode(DataSrc&, DataDst&) final;
-    void decode(DataSrc&, DataDst&) final;
+    size_t encode(DataSrc&, DataDst&) final;
+    size_t decode(DataSrc&, DataDst&) final;
 };
 
 }

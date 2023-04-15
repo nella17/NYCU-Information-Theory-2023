@@ -21,6 +21,7 @@ public:
     bool eof() const;
     size_t remain() const;
     size_t size() const;
+    size_t total() const;
     void reset();
     void back(size_t);
 

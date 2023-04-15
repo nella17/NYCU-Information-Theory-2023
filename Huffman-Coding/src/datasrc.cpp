@@ -54,6 +54,10 @@ size_t DataSrc::size() const {
     }
 }
 
+size_t DataSrc::total() const {
+    return filesize;
+}
+
 void DataSrc::reset() {
     if (!stream) {
         datacur = start * 8;
