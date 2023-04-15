@@ -62,6 +62,15 @@ HuffmanTree(size_t _b, const std::vector<std::pair<size_t, V>>& freq):
 }
 
 template<uint8_t logD, typename V>
+HuffmanTree<logD, V>::
+HuffmanTree(size_t _b, Data& data):
+    bits(_b), root(0), nodes(1)
+{
+    nodes.reserve(data.size() / bits * 2);
+    parse(root, data);
+}
+
+template<uint8_t logD, typename V>
 size_t
 HuffmanTree<logD, V>::
 height() const {
@@ -95,6 +104,23 @@ dump(size_t idx, Data& data) {
 template<uint8_t logD, typename V>
 void
 HuffmanTree<logD, V>::
+parse(size_t idx, Data& data) {
+    nodes[idx].end = data.readint(1);
+    if (nodes[idx].end) {
+        nodes[idx].value = data.readint(bits);
+        nodes[idx].height = 1;
+    } else {
+        for (size_t i = 0; i < D and !data.eof(); i++) {
+            auto nt = nodes[idx].cls[i] = newNode();
+            parse(nt, data);
+            nodes[idx].height = std::max(nodes[idx].height, nodes[nt].height + 1);
+        }
+    }
+}
+
+template<uint8_t logD, typename V>
+void
+HuffmanTree<logD, V>::
 buildtable() {
     table.clear();
     DataType dt{};
@@ -114,6 +140,17 @@ buildtable() {
         }
     };
     dfs(root);
+    if (0) {
+        std::cerr << "dump table" << std::endl;
+        std::vector<std::pair<V, DataType>> v(table.begin(), table.end());
+        std::sort(v.begin(), v.end());
+        for(auto [x, y]: v) {
+            std::cerr << std::hex << x << std::dec << " -> ";
+            for(auto z: y) std::cerr << z;
+            std::cerr << std::endl;
+        }
+        std::cerr << std::endl;
+    }
 }
 
 template<uint8_t logD, typename V>
@@ -121,6 +158,18 @@ DataType
 HuffmanTree<logD, V>::
 encode(const V value) {
     return table.find(value)->second;
+}
+
+template<uint8_t logD, typename V>
+V
+HuffmanTree<logD, V>::
+decode(DataSrc& src) {
+    auto idx = root;
+    while (!nodes[idx].end) {
+        auto b =  src.readint(logD);
+        idx = nodes[idx].cls[b];
+    }
+    return nodes[idx].value;
 }
 
 template class HuffmanTree<1, uint64_t>;

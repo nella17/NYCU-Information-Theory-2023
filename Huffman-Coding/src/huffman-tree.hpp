@@ -2,6 +2,7 @@
 
 #include "utils.hpp"
 #include "data.hpp"
+#include "datasrc.hpp"
 
 #include <cstdint>
 #include <array>
@@ -25,13 +26,17 @@ public:
     };
 
     HuffmanTree(size_t, const std::vector<std::pair<size_t, V>>&);
+    HuffmanTree(size_t, Data&);
     size_t height() const;
 
     Data dump();
     void dump(size_t, Data&);
 
+    void parse(size_t, Data&);
+
     void buildtable();
     DataType encode(const V);
+    V decode(DataSrc&);
 
     const size_t bits;
 private:

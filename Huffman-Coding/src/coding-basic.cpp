@@ -80,13 +80,13 @@ void Basic::encode(DataSrc& src, DataDst& dst) {
     dst.write(true);
     timer_stop();
 
-    auto size = data.size() / int64_t(8);
+    auto csize = data.size() / 8;
     std::cerr
         << "Original size: " << origsize << " bytes\n"
-        << "Compressed size: " << size << " bytes\n"
+        << "Compressed size: " << csize << " bytes (" << data.size() << " bits)\n"
         << "Compression rate: "
             << std::setw(5) << std::setprecision(2) << std::fixed
-            << 100 * (double)(origsize - size) / (double)origsize << "%\n"
+            << 100 * (double)(origsize - csize) / (double)origsize << "%\n"
         << std::flush;
 }
 
@@ -95,10 +95,40 @@ void Basic::decode(DataSrc& src, DataDst& dst) {
     auto treedata = src.readdata(treesize);
     size_t origsize = src.readint(32);
     size_t total = origsize / (opts.bits / 8);
+    size_t datasize = src.remain();
+    auto csize = datasize / int64_t(8);
 
     std::cerr
         << "Tree size: " << treedata.size() << '\n'
         << "Original size: " << origsize << " bytes\n"
+        << "Compressed size: " << csize << " bytes (" << datasize << " bits)\n"
+        << std::flush;
+
+    timer_start("restore huffman tree");
+    HuffmanTree ht(opts.bits, treedata);
+    ht.buildtable();
+    timer_stop();
+    std::cerr
+        << "Tree Height: " << ht.height() << '\n'
+        << std::flush;
+
+    timer_start_progress("decompress file");
+    Data data;
+    for (size_t cnt = 0; cnt < total and !src.eof(); cnt++) {
+        auto value = ht.decode(src);
+        data.writeint(opts.bits, value);
+        timer_progress(double(cnt) / double(total));
+    }
+    timer_stop_progress();
+
+    timer_start("write file");
+    dst.write(data);
+    dst.write(true);
+    timer_stop();
+
+    auto dsize = data.size() / int64_t(8);
+    std::cerr
+        << "Decompressed size: " << dsize << " bytes\n"
         << std::flush;
 }
 
