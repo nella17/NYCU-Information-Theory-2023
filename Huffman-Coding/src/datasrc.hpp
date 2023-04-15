@@ -12,12 +12,13 @@ class DataSrc {
     const int fd;
     size_t datacur, datasize;
     uint8_t* data;
-    DataType remain;
+    DataType buf;
 public:
 
     DataSrc(bool, int);
 
     bool eof() const;
+    size_t remain() const;
     size_t size() const;
     void reset();
 

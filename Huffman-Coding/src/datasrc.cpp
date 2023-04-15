@@ -8,7 +8,7 @@ DataSrc::DataSrc(bool _s, int _fd):
     stream(_s),
     fd(_fd),
     datacur(0),
-    remain{}
+    buf{}
 {
     if (!stream) {
         if (lseek(fd, 0, SEEK_SET) < 0) {
@@ -33,6 +33,14 @@ bool DataSrc::eof() const {
     } else {
         // TODO
         assert(!(bool)"TODO");
+    }
+}
+
+size_t DataSrc::remain() const {
+    if (!stream) {
+        return datasize - datacur;
+    } else {
+        assert(false);
     }
 }
 
