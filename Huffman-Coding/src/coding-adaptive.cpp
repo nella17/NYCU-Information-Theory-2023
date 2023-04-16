@@ -46,22 +46,31 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
 size_t Adaptive::decode(DataSrc& src, DataDst& dst) {
     HuffmanTreeFGK ht(opts.bits);
 
-    // timer_start_progress("decompress file");
+    size_t dsize = 0;
+
+    timer_start_progress("decompress file");
     Data data;
     for (size_t cnt = 0; !src.eof(); cnt++) {
-        // auto value = ht.decode(src);
-        auto value = src.readint(opts.bits);
-        std::cerr << " -> " << std::hex << value << std::endl;
-        // data.writeint(opts.bits, value);
-        // timer_progress(double(cnt) / double(total));
+        auto value = ht.decode(src);
+        if (value == (uint64_t)-1)
+            break;
+        dsize += opts.bits;
+        data.writeint(opts.bits, value);
+        timer_progress((double)cnt / 1e8);
     }
-    // src.back(data.size() - origsize * 8);
-    // data.resize(origsize * 8);
-    // timer_stop_progress();
+    timer_stop_progress();
 
-    auto dsize = data.size() / 8;
+    timer_start("write file");
+    dst.write(data);
+    dst.write(false);
+    timer_stop();
+
+    size_t compsize8 = src.total();
+    auto compsize = (compsize8 + 7) / 8;
+
     if (opts.verbose) {
         std::cerr
+            << "Tree size: " << ht.height() << '\n'
             << "Decompressed size: " << dsize << " bytes\n"
             << std::flush;
     }

@@ -74,8 +74,22 @@ encode(const V v) {
 template<uint8_t logD, typename V, V NYTvalue>
 V
 HuffmanTreeFGK<logD, V, NYTvalue>::
-decode(DataSrc&) {
-    // TODO
+decode(DataSrc& src) {
+    auto cur = root;
+    while (cur != NYT and not nodes[cur].leaf) {
+        if (src.eof()) return NYTvalue;
+        auto b = src.nextbit();
+        cur = nodes[cur].cls[ b ];
+    }
+    V v;
+    if (cur != NYT) {
+        v = nodes[cur].value;
+    } else {
+        v = (V) src.readint(bits);
+    }
+    update(v);
+    // debug();
+    return v;
 }
 
 template<uint8_t logD, typename V, V NYTvalue>
@@ -169,7 +183,7 @@ void
 HuffmanTreeFGK<logD, V, NYTvalue>::
 debug() {
     // return;
-    /*
+    //*
     std::cerr << " nodes: \n";
     for (auto n: nodes) {
         std::cerr << "  " << n.idx << ' ' << n.order << " | " << n.freq << ' ' << n.parent << " / ";
@@ -178,14 +192,14 @@ debug() {
         std::cerr << '\n';
     }
     std::cerr << " freq: \n";
-    for(const auto& [f, s]: freqIds) {
-        std::cerr << "  " << f << " -> ";
-        for (auto x: s) std::cerr << x << ' ';
-        std::cerr << '\n';
-    }
+    // for(const auto& [f, s]: freqIds) {
+    //     std::cerr << "  " << f << " -> ";
+    //     for (auto x: s) std::cerr << x << ' ';
+    //     std::cerr << '\n';
+    // }
     std::cerr << " table: \n";
     for (auto [v, i]: table) {
-        std::cerr << "  " << getcode(v) << " -> "
+        std::cerr << "  " << getcode(table[v]) << " -> "
             << std::hex << v << '(' << char(v) << ')'
             << " " << i << '\n';
     }
