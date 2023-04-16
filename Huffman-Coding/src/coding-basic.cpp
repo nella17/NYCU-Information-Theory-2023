@@ -108,6 +108,8 @@ size_t Basic::decode(DataSrc& src, DataDst& dst) {
     size_t datasize = src.remain();
     auto compsize = datasize / 8;
 
+    if (!origsize or !compsize) return 0;
+
     if (opts.verbose) {
         std::cerr
             << "Tree size: " << treedata.size() << '\n'

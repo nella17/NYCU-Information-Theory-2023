@@ -36,7 +36,7 @@ signed main(int argc, char* const argv[]) {
         origsize = 0;
         do {
             origsize += func->decode(src, dst);
-        } while (src.remain() >= 64);
+        } while (!src.eof());
         compsize = src.total();
     }
 
