@@ -46,6 +46,9 @@ signed main(int argc, char* const argv[]) {
         << "Compression rate: "
             << std::setw(5) << std::setprecision(2) << std::fixed
             << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
+        << "Expected codeword length (include header): "
+            << std::setw(5) << std::setprecision(2) << std::fixed
+            << (double)compsize / ((double)origsize / (double)opts.bits) << "\n"
         << std::flush;
 
     return EXIT_SUCCESS;
