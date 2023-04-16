@@ -126,10 +126,6 @@ size_t Basic::decode(DataSrc& src, DataDst& dst) {
             << std::flush;
     }
 
-    if (origsize >= 256 * 1024 * 1024) {
-        getchar();
-    }
-
     timer_start_progress("decompress file");
     Data data;
     for (size_t cnt = 0; data.size() / 8 < origsize and !src.eof(); cnt++) {
