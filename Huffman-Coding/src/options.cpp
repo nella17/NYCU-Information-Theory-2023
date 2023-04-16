@@ -1,5 +1,6 @@
 #include "options.hpp"
 
+#include <iostream>
 #include <unistd.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -18,6 +19,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -s, --split <size>      Split input file every <size> bytes of data (default ∞)
     -v, --verbose           Show debug / analysis /time info
     --no-time               No show time info
+    --stream                Stream compress
 
 Coding Algorithms
     basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
@@ -36,6 +38,7 @@ const struct option longopts[] = {
     { "split",  required_argument,  0,  's' },
     { "verbose",no_argument,        0,  'v' },
     { "no-time",no_argument,        &opts.notime,   1  },
+    { "stream", no_argument,        &opts.stream,   1  },
     { 0,        0,                  0,   0  },
 };
 
@@ -53,8 +56,6 @@ void Options::parse(int argc, char* const argv[]) {
 
        case 't':
            type = optarg;
-           if (type == "basic")
-               stream = false;
            break;
 
        case 'e':
@@ -97,10 +98,12 @@ void Options::parse(int argc, char* const argv[]) {
        }
     }
 
+    if (stream) assert(!(bool)"TODO options: stream");
+
     bool check = true;
     check &= encode ^ decode;
     check &= !type.empty();
-    check &= type != "basic" or bits % 8 == 0;
+    check &= type != "basic" or (bits % 8 == 0 and stream == 0);
     check &= split == INF_SIZET or split % bits == 0;
     if (!check) USAGE();
 }
