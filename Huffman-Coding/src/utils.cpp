@@ -19,25 +19,27 @@ double timer_stop() {
     return cnt;
 }
 
-double progress;
+double progress, last;
 int size;
 void timer_start_progress(std::string s) {
     timer_start(s);
-    progress = 0;
+    progress = last = 0;
     size = 4;
     if (!opts.notime) std::cerr << "0.0%" << std::flush;
 }
 void timer_progress(double p) {
     p *= 100;
-    if (p - progress >= 0.1) {
-        if (!opts.notime) std::cerr << std::string((size_t)size, '\b') << std::flush;
-        char buf[16];
+    if (p - progress >= 0.05) {
+        if (!opts.notime)
+            std::cerr << std::string((size_t)size, '\b');
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
         auto cnt = elapsed_seconds.count();
+        char buf[16];
         progress = p;
-        size = snprintf(buf, sizeof(buf), "%.1f%% %.2fs", progress, cnt);
-        if (!opts.notime) std::cerr << buf << std::flush;
+        size = snprintf(buf, sizeof(buf), "%.1f%% %.1fs", progress, cnt);
+        if (!opts.notime)
+            std::cerr << buf << std::flush;
     }
 }
 double timer_stop_progress() {
