@@ -14,9 +14,10 @@ HuffmanTreeFGK<logD, V, NYTvalue>::HuffmanTreeFGK::
 newNode(V v, size_t p, size_t f) {
     size_t idx = nodes.size();
     nodes.emplace_back(idx, p, f, v);
-    freqIds[f].emplace(idx);
-    table[v] = idx;
+    // freqIds[f].emplace(idx);
     orders.emplace_back(idx);
+    if (v != NYTvalue)
+        table.emplace(v, idx);
     return idx;
 }
 
@@ -38,8 +39,9 @@ height() const {
 template<uint8_t logD, typename V, V NYTvalue>
 DataType
 HuffmanTreeFGK<logD, V, NYTvalue>::
-getcode_by_idx(size_t cur) {
+getcode(size_t cur) {
     DataType dt{};
+    dt.reserve(height());
     while (cur != root) {
         auto par = nodes[cur].parent;
         // TODO: iter D cls
@@ -53,26 +55,19 @@ getcode_by_idx(size_t cur) {
 template<uint8_t logD, typename V, V NYTvalue>
 DataType
 HuffmanTreeFGK<logD, V, NYTvalue>::
-getcode(V v) {
-    auto it = table.find(v);
-    if (it != table.end())
-        return getcode_by_idx(it->second);
-    auto dt = getcode_by_idx(NYT);
-    for (size_t i = 0; i < bits; i++)
-        dt.push_back( (v >> (bits-1-i)) & 1);
-    return dt;
-}
-
-template<uint8_t logD, typename V, V NYTvalue>
-DataType
-HuffmanTreeFGK<logD, V, NYTvalue>::
 encode(const V v) {
-    // std::cerr << "getcode " << v << std::endl;
-    auto code = getcode(v);
-    // std::cerr << "update " << v << std::endl;
+    DataType code;
+    auto it = table.find(v);
+    if (it != table.end()) {
+        code = getcode(it->second);
+    } else {
+        code = getcode(NYT);
+        for (size_t i = 0; i < bits; i++)
+            code.push_back( (v >> (bits-1-i)) & 1);
+    }
     update(v);
     // std::cerr << "done " << v << std::endl;
-    debug();
+    // debug();
     return code;
 }
 
@@ -97,16 +92,17 @@ update(V v) {
         NYT = newNode(NYTvalue, par, 0);
         nodes[par].leaf = false;
         nodes[par].cls = { nxt, NYT };
+        fixH(par);
         if (par != root) inc(par);
         cur = nodes[par].parent;
     }
     while (cur != root) {
         // std::cerr << "update " << cur << " " << root << std::endl;
-        // size_t nxt = cur;
-        // for (size_t i = cur - 1; i; i--)
-        //     if (nodes[i].freq == nodes[cur].freq)
-        //         nxt = i;
-        auto nxt = orders[ *freqIds[ nodes[cur].freq ].begin() ];
+        size_t nxt = cur;
+        for (size_t i = nodes[cur].order; i; i--)
+            if (nodes[ orders[i-1] ].freq == nodes[cur].freq)
+                nxt = orders[i-1];
+        // auto nxt = orders[ *freqIds[ nodes[cur].freq ].begin() ];
         // debug();
         swap(cur, nxt);
         inc(cur);
@@ -118,14 +114,27 @@ update(V v) {
 template<uint8_t logD, typename V, V NYTvalue>
 void
 HuffmanTreeFGK<logD, V, NYTvalue>::
+fixH(size_t cur) {
+    if (nodes[cur].leaf)
+        nodes[cur].height = 1;
+    else
+        nodes[cur].height = 1 + std::max(
+            nodes[ nodes[cur].cls[0] ].height,
+            nodes[ nodes[cur].cls[1] ].height
+        );
+}
+
+template<uint8_t logD, typename V, V NYTvalue>
+void
+HuffmanTreeFGK<logD, V, NYTvalue>::
 inc(size_t cur) {
     // std::cerr << "inc " << cur << std::endl;
     auto& f = nodes[cur].freq;
     auto o = nodes[cur].order;
-    assert( freqIds[f].erase(o) );
-    if (freqIds[f].empty()) freqIds.erase(f);
+    // assert( freqIds[f].erase(o) );
+    // if (freqIds[f].empty()) freqIds.erase(f);
     f++;
-    assert( freqIds[f].emplace(o).second );
+    // assert( freqIds[f].emplace(o).second );
 }
 
 template<uint8_t logD, typename V, V NYTvalue>
@@ -136,7 +145,7 @@ swap(size_t a, size_t b) {
     if (a == b or a == root or b == root or pa == b or a == pb)
         return;
 
-    std::cerr << "swap " << a << " " << b << std::endl;
+    // std::cerr << "swap " << a << " " << b << std::endl;
 
     // TODO: iter D cls
     std::swap(
@@ -148,6 +157,9 @@ swap(size_t a, size_t b) {
     std::swap(orders[oa], orders[ob]);
     std::swap(nodes[a].parent, nodes[b].parent);
     std::swap(nodes[a].order, nodes[b].order);
+
+    fixH(pa);
+    fixH(pb);
 
     // std::swap(a, b);
 }

@@ -19,20 +19,10 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
     timer_start_progress("compress file");
     for (size_t cnt = 0; !src.eof(); cnt++) {
         auto value = src.readint(opts.bits);
-
-        // std::cerr << std::hex << value << " " << cnt << std::endl;
-
         auto code = ht.encode(value);
-
-        /*
-        std::cerr << std::hex << value << " -> " << code << std::endl;
-        src.nextbyte();
-        // getchar();
-        //*/
-
         compsize8 += code.size();
         dst.write(code);
-        timer_progress((double)cnt / 3e8);
+        timer_progress((double)cnt / 1e8);
     }
     timer_stop_progress();
 
@@ -41,6 +31,7 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
 
     if (opts.verbose) {
         std::cerr
+            << "Tree Height: " << ht.height() << '\n'
             << "Original size: " << origsize << " bytes\n"
             << "Compressed size (file): " << compsize << " bytes (" << compsize8 << " bits)\n"
             << "Compression rate (file): "
