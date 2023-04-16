@@ -17,11 +17,13 @@ class DataSrc {
         uint8_t* data;
         FILE* file;
     };
+
+    bool peek();
 public:
 
     DataSrc(bool, int);
 
-    bool eof() const;
+    bool eof();
     size_t remain() const;
     size_t size() const;
     size_t total() const;

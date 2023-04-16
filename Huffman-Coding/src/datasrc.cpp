@@ -10,7 +10,8 @@ DataSrc::DataSrc(bool _s, int _fd):
     fd(_fd),
     split(INF_SIZET),
     datacur(0),
-    filesize(0)
+    filesize(0),
+    end(0)
 {
     auto pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
     if (!stream) {
@@ -28,6 +29,7 @@ DataSrc::DataSrc(bool _s, int _fd):
             exit(EXIT_FAILURE);
         }
     } else {
+        last = 0;
         file = fdopen(fd, "r");
         if (file == NULL) {
             perror("fdopen");
@@ -36,12 +38,9 @@ DataSrc::DataSrc(bool _s, int _fd):
     }
 }
 
-bool DataSrc::eof() const {
-    if (!stream) {
-        return datacur / 8 >= end;
-    } else {
-        return datacur % 8 or feof(file);
-    }
+bool DataSrc::eof() {
+    if (stream) peek();
+    return datacur / 8 >= end;
 }
 
 size_t DataSrc::remain() const {
@@ -112,16 +111,24 @@ bool DataSrc::operator[](size_t idx) const {
     }
 }
 
+bool DataSrc::peek() {
+    if (!stream) {
+        return false;
+    } else {
+        if (datacur / 8 < end)
+            return false;
+        if (fread(&last, 1, 1, file) == 0)
+            return false;
+        filesize++; end++;
+        return true;
+    }
+}
+
 bool DataSrc::nextbit() {
     if (!stream) {
         return operator[](datacur++);
     } else {
-        if (datacur % 8 == 0) {
-            if (fread(&last, 1, 1, file))
-                filesize++;
-            else
-                return 0;
-        }
+        if (eof()) assert(false);
         auto r = (last >> (7 - datacur % 8)) & 1;
         datacur++;
         return r;
@@ -130,17 +137,15 @@ bool DataSrc::nextbit() {
 
 uint8_t DataSrc::nextbyte() {
     assert(datacur % 8 == 0); // TODO
-    if (datacur / 8 >= end) return 0;
+    if (eof()) assert(false);
     uint8_t r;
     if (!stream) {
         r = data[datacur / 8];
-        datacur += 8;
     } else {
-        if (fread(&r, 1, 1, file)) {
-            filesize++;
-            datacur += 8;
-        }
+        peek();
+        r = last;
     }
+    datacur += 8;
     return r;
 }
 
