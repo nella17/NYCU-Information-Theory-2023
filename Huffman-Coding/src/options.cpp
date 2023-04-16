@@ -100,7 +100,7 @@ void Options::parse(int argc, char* const argv[]) {
     bool check = true;
     check &= encode ^ decode;
     check &= !type.empty();
-    check &= type == "basic" && bits % 8 == 0;
+    check &= type != "basic" or bits % 8 == 0;
     check &= split == INF_SIZET or split % bits == 0;
     if (!check) USAGE();
 }
