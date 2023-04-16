@@ -12,8 +12,11 @@ class DataSrc {
     const int fd;
     size_t split;
     size_t datacur, filesize, start, end;
-    uint8_t* data;
-    DataType buf;
+    uint8_t last;
+    union {
+        uint8_t* data;
+        FILE* file;
+    };
 public:
 
     DataSrc(bool, int);
@@ -29,6 +32,9 @@ public:
     bool nextsplit();
 
     bool operator[](size_t) const;
+    bool nextbit();
+    uint8_t nextbyte();
+
     DataType read(size_t);
     DataType read(size_t, size_t) const;
 

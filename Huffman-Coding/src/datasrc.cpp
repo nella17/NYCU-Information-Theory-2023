@@ -1,5 +1,6 @@
 #include "datasrc.hpp"
 
+#include <cstdio>
 #include <cassert>
 #include <iostream>
 #include <sys/mman.h>
@@ -9,21 +10,27 @@ DataSrc::DataSrc(bool _s, int _fd):
     fd(_fd),
     split(INF_SIZET),
     datacur(0),
-    start(0),
-    buf{}
+    filesize(0)
 {
+    auto pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
     if (!stream) {
         if (lseek(fd, 0, SEEK_SET) < 0) {
             perror("lseek");
             exit(EXIT_FAILURE);
         }
-        size_t size = (size_t)lseek(fd, 0, SEEK_END);
+        auto size = (size_t)lseek(fd, 0, SEEK_END);
+        start = 0;
         end = filesize = size;
-        auto pagesize = (size_t)sysconf(_SC_PAGE_SIZE);
         auto mapsize = (size + pagesize - 1) & (~(pagesize-1));
         data = (uint8_t*)mmap(NULL, mapsize, PROT_READ, MAP_FILE | MAP_SHARED, fd, 0);
         if ((long)data < 0) {
             perror("mmap");
+            exit(EXIT_FAILURE);
+        }
+    } else {
+        file = fdopen(fd, "r");
+        if (file == NULL) {
+            perror("fdopen");
             exit(EXIT_FAILURE);
         }
     }
@@ -33,8 +40,7 @@ bool DataSrc::eof() const {
     if (!stream) {
         return datacur / 8 >= end;
     } else {
-        // TODO
-        assert(!(bool)"TODO");
+        return datacur % 8 or feof(file);
     }
 }
 
@@ -106,15 +112,43 @@ bool DataSrc::operator[](size_t idx) const {
     }
 }
 
-DataType DataSrc::read(size_t bits) {
+bool DataSrc::nextbit() {
     if (!stream) {
-        auto r = read(datacur, bits);
-        datacur += bits;
-        return r;
+        return operator[](datacur++);
     } else {
-        // TODO
-        assert(!(bool)"TODO");
+        if (datacur % 8 == 0) {
+            if (fread(&last, 1, 1, file))
+                filesize++;
+            else
+                return 0;
+        }
+        auto r = (last >> (7 - datacur % 8)) & 1;
+        datacur++;
+        return r;
     }
+}
+
+uint8_t DataSrc::nextbyte() {
+    assert(datacur % 8 == 0); // TODO
+    if (datacur / 8 >= end) return 0;
+    uint8_t r;
+    if (!stream) {
+        r = data[datacur / 8];
+        datacur += 8;
+    } else {
+        if (fread(&r, 1, 1, file)) {
+            filesize++;
+            datacur += 8;
+        }
+    }
+    return r;
+}
+
+DataType DataSrc::read(size_t bits) {
+    DataType dt(bits, 0);
+    for (size_t i = 0; i < bits; i++)
+        dt[i] = nextbit();
+    return dt;
 }
 
 DataType DataSrc::read(size_t pos, size_t bits) const {
@@ -143,19 +177,14 @@ Data DataSrc::readdata(const size_t size) {
 }
 
 uint64_t DataSrc::readint(size_t bits) {
-    if (!stream) {
-        uint64_t ret = 0;
-        size_t i = 0;
-        for (; i < bits and datacur % 8; i++, datacur++)
-            ret = (ret << 1) | operator[](datacur);
-        for (; i + 8 <= bits and datacur / 8 + 1 <= end; i += 8, datacur += 8)
-            ret = (ret << 8) | data[datacur / 8];
-        for (; i < bits; i++, datacur++)
-            ret = (ret << 1) | operator[](datacur);
-        return ret;
-    } else {
-        // TODO
-        assert(!(bool)"TODO");
-    }
+    uint64_t ret = 0;
+    size_t i = 0;
+    for (; i < bits and datacur % 8; i++)
+        ret = (ret << 1) | nextbit();
+    for (; i + 8 <= bits and datacur / 8 + 1 <= end; i += 8)
+        ret = (ret << 8) | nextbyte();
+    for (; i < bits; i++)
+        ret = (ret << 1) | nextbit();
+    return ret;
 }
 
