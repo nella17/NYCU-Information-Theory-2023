@@ -8,11 +8,11 @@
 
 template<uint8_t logD, typename V>
 HuffmanTree<logD, V>::HuffmanTree::
-Node::Node(): end(false), freq(0), height(0), cls{} {}
+Node::Node(): leaf(false), freq(0), height(0), cls{} {}
 
 template<uint8_t logD, typename V>
 HuffmanTree<logD, V>::HuffmanTree::
-Node::Node(size_t f, V v): end(true), freq(f), height(1), value(v) {}
+Node::Node(size_t f, V v): leaf(true), freq(f), height(1), value(v) {}
 
 template<uint8_t logD, typename V>
 size_t
@@ -90,8 +90,8 @@ template<uint8_t logD, typename V>
 void
 HuffmanTree<logD, V>::
 dump(size_t idx, Data& data) {
-    data.writeint(1, nodes[idx].end);
-    if (nodes[idx].end) {
+    data.writeint(1, nodes[idx].leaf);
+    if (nodes[idx].leaf) {
         data.writeint(bits, nodes[idx].value);
     } else {
         for (size_t i = 0; i < D; i++) {
@@ -105,8 +105,8 @@ template<uint8_t logD, typename V>
 void
 HuffmanTree<logD, V>::
 parse(size_t idx, Data& data) {
-    nodes[idx].end = data.readint(1);
-    if (nodes[idx].end) {
+    nodes[idx].leaf = data.readint(1);
+    if (nodes[idx].leaf) {
         nodes[idx].value = data.readint(bits);
         nodes[idx].height = 1;
     } else {
@@ -126,7 +126,7 @@ buildtable() {
     DataType dt{};
     std::function<void(size_t)> dfs;
     dfs = [&](size_t idx) {
-        if (nodes[idx].end) {
+        if (nodes[idx].leaf) {
             table.emplace(nodes[idx].value, dt);
         } else {
             for (size_t i = 0; i < D; i++) {
@@ -167,7 +167,7 @@ V
 HuffmanTree<logD, V>::
 decode(DataSrc& src) {
     auto idx = root;
-    while (!nodes[idx].end) {
+    while (!nodes[idx].leaf) {
         auto b =  src.readint(logD);
         // std::cerr << b;
         idx = nodes[idx].cls[b];
