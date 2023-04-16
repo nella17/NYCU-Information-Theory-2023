@@ -15,12 +15,12 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -d, --decode            Decode
     -i, --input <file>      Set input file (default STDIN)
     -o, --output <file>     Set output file (default STDOUT)
+    --ostream               Output stream
     -b, --bits <bits>       Tread input file as <bits> data source (default 8)
     -s, --split <size>      Split input file every <size> bytes of data (default ∞)
     -v, --verbose           Show debug / analysis /time info
     --pmf                   Show pmf freq
     --no-time               No show time info
-    --stream                Stream compress
 
 Coding Algorithms
     basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
@@ -35,12 +35,12 @@ const struct option longopts[] = {
     { "decode", no_argument,        0,  'd' },
     { "input",  required_argument,  0,  'i' },
     { "output", required_argument,  0,  'o' },
+    { "ostream",no_argument,        &opts.ostream,  1 },
     { "bits",   required_argument,  0,  'b' },
     { "split",  required_argument,  0,  's' },
     { "verbose",no_argument,        0,  'v' },
     { "pmf",    no_argument,        &opts.pmf,      1  },
     { "no-time",no_argument,        &opts.notime,   1  },
-    { "stream", no_argument,        &opts.stream,   1  },
     { 0,        0,                  0,   0  },
 };
 
@@ -58,6 +58,8 @@ void Options::parse(int argc, char* const argv[]) {
 
        case 't':
            type = optarg;
+           if (type == "basic")
+              stream = false;
            break;
 
        case 'e':
@@ -99,9 +101,6 @@ void Options::parse(int argc, char* const argv[]) {
            USAGE();
        }
     }
-
-    if (stream) assert(!(bool)"TODO options: stream");
-    // stream = type == "adaptive";
 
     bool check = true;
     check &= encode ^ decode;
