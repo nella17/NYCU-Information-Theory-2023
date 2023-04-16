@@ -10,7 +10,7 @@
 constexpr auto INF_SIZET = std::numeric_limits<size_t>::max();
 
 // TODO: d-ary
-using DataType = std::basic_string<bool>;
+using DataType = std::vector<bool>;
 using CharValue = std::bitset<8>;
 
 void timer_start(std::string);
