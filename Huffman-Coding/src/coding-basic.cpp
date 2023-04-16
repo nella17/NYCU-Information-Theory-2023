@@ -85,19 +85,19 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
     //     std::cerr << x;
     // std::cerr << std::endl;
 
-    auto csize = (data.size() + 7) / 8;
-    auto tcsize = 32 / 8 + treedata.size() / 8 + 32 / 8 + csize;
+    auto compsize = (data.size() + 7) / 8;
+    auto total_compsize = 32 / 8 + treedata.size() / 8 + 32 / 8 + compsize;
     if (opts.verbose) {
         std::cerr
             << "Original size: " << origsize << " bytes\n"
-            << "Compressed size (file): " << csize << " bytes (" << data.size() << " bits)\n"
+            << "Compressed size (file): " << compsize << " bytes (" << data.size() << " bits)\n"
             << "Compression rate (file): "
                 << std::setw(5) << std::setprecision(2) << std::fixed
-                << 100 * (double)((int64_t)origsize - (int64_t)csize) / (double)origsize << "%\n"
+                << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
             << std::flush;
     }
 
-    return tcsize;
+    return total_compsize;
 }
 
 size_t Basic::decode(DataSrc& src, DataDst& dst) {
@@ -106,13 +106,13 @@ size_t Basic::decode(DataSrc& src, DataDst& dst) {
     size_t origsize = src.readint(32);
     size_t total = origsize / (opts.bits / 8);
     size_t datasize = src.remain();
-    auto csize = datasize / 8;
+    auto compsize = datasize / 8;
 
     if (opts.verbose) {
         std::cerr
             << "Tree size: " << treedata.size() << '\n'
             << "Original size: " << origsize << " bytes\n"
-            << "Compressed size: " << csize << " bytes (" << datasize << " bits)\n"
+            << "Compressed size: " << compsize << " bytes (" << datasize << " bits)\n"
             << std::flush;
     }
 
