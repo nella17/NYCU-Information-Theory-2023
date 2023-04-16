@@ -55,9 +55,23 @@ uint64_t Data::readint(size_t bits) {
     return ret;
 }
 
-void Data::write(const DataType& /* data */) {
-    // TODO
-    assert(!(bool)"TODO");
+void Data::write(const DataType& value) {
+    size_t i = 0, sz = value.size();
+    if (datasize % 8) {
+        for (; i < sz and datasize % 8; i++, datasize++)
+            data.back() |= uint8_t(value[i] << (7 - datasize % 8));
+    }
+    for (; i+8 <= sz; i += 8, datasize += 8) {
+        uint8_t t = 0;
+        for (size_t j = 0; j < 8; j++)
+            t = uint8_t(t << 1) | (uint8_t)value[i+j];
+        data.push_back(t);
+    }
+    if (i < sz) {
+        data.push_back(0);
+        for (; i < sz; i++, datasize++)
+            data.back() |= uint8_t(value[i] << (7 - datasize % 8));
+    }
 }
 
 void Data::writeint(size_t bits, uint64_t value) {

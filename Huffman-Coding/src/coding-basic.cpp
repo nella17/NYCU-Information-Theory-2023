@@ -78,7 +78,7 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
     dst.write(treedata);
     dst.writeint(32, origsize);
     dst.write(data);
-    dst.write(false);
+    dst.write(true);
     timer_stop();
 
     // for (auto x: data)
@@ -142,7 +142,7 @@ size_t Basic::decode(DataSrc& src, DataDst& dst) {
 
     timer_start("write file");
     dst.write(data);
-    dst.write(false);
+    dst.write(true);
     timer_stop();
 
     auto dsize = data.size() / 8;

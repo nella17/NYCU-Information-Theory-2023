@@ -17,14 +17,20 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
     size_t compsize8 = 0;
 
     timer_start_progress("compress file");
+    Data data;
     for (size_t cnt = 0; !src.eof(); cnt++) {
         auto value = src.readint(opts.bits);
         auto code = ht.encode(value);
         compsize8 += code.size();
-        dst.write(code);
+        data.write(code);
         timer_progress((double)cnt / 1e8);
     }
     timer_stop_progress();
+
+    timer_start("write file");
+    dst.write(data);
+    dst.write(false);
+    timer_stop();
 
     auto compsize = (compsize8 + 7) / 8;
     auto origsize = src.total();
