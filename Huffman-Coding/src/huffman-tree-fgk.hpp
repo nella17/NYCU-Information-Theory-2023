@@ -8,7 +8,7 @@
 #include <set>
 #include <unordered_map>
 
-template<uint8_t logD = 1, typename V = uint64_t>
+template<uint8_t logD = 1, typename V = uint64_t, V NYTvalue = std::numeric_limits<V>::max()>
 class HuffmanTreeFGK {
 public:
     static constexpr uint8_t D = 1 << logD;
@@ -38,7 +38,8 @@ private:
 
     void update(size_t);
 
-    std::unordered_map<V, DataType> table;
+    // /TODO
+    // std::unordered_map<V, DataType> table;
     std::unordered_map<size_t, std::set<size_t>> weightIds;
 
     size_t root, NYT;
