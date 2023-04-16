@@ -23,6 +23,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     --no-time               No show time info
 
 Coding Algorithms
+    analysis    Analysis entropy
     basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
     adaptive    Adaptive Huffman Coding Algorithm
     extended    Extended Huffman Coding Algorithm
@@ -103,8 +104,8 @@ void Options::parse(int argc, char* const argv[]) {
     }
 
     bool check = true;
-    check &= encode ^ decode;
     check &= !type.empty();
+    check &= type == "analysis" or encode ^ decode;
     check &= type != "basic" or (bits % 8 == 0 and stream == 0);
     check &= split == INF_SIZET or split % bits == 0;
     if (!check) USAGE();

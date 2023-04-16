@@ -3,11 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-
-#ifndef MAX_FILE_SIZE
-// 512MB
-#define MAX_FILE_SIZE (1024 * 1024 * 512)
-#endif
+#include <unordered_map>
 
 #include "options.hpp"
 #include "utils.hpp"
@@ -16,6 +12,35 @@
 
 signed main(int argc, char* const argv[]) {
     opts.parse(argc, argv);
+
+    if (opts.type == "analysis") {
+        opts.notime = 0;
+
+        std::unordered_map<uint64_t, size_t> map{};
+        DataSrc src(false, opts.input_fd);
+        size_t origsize = src.size() / 8;
+        size_t total = src.size() / opts.bits;
+
+        timer_start_progress("calculate pmf");
+        for (size_t cnt = 0; !src.eof(); cnt++) {
+            uint64_t value = src.readint(opts.bits);
+            map[value] += 1;
+            timer_progress(double(cnt) / double(total));
+        }
+        timer_stop_progress();
+
+        std::vector<std::pair<size_t, uint64_t>> freq;
+        freq.reserve(map.size());
+        for (auto [v, c]: map)
+            freq.emplace_back(c, v);
+
+        auto entropy = calc_entropy(freq);
+        std::cerr
+            << "Entropy:            " << entropy << '\n'
+            << std::flush;
+
+        return EXIT_SUCCESS;
+    }
 
     auto func = coding::make();
     if (!func) USAGE();
