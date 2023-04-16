@@ -17,7 +17,7 @@ public:
     size_t height() const;
 
     DataType getcode(size_t);
-    DataType getcode(V);
+    DataType getnytcode();
 
     DataType encode(const V);
     V decode(DataSrc&);

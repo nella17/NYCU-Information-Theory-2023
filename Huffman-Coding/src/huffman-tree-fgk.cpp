@@ -55,6 +55,13 @@ getcode(size_t cur) {
 template<uint8_t logD, typename V, V NYTvalue>
 DataType
 HuffmanTreeFGK<logD, V, NYTvalue>::
+getnytcode() {
+    return getcode(NYT);
+}
+
+template<uint8_t logD, typename V, V NYTvalue>
+DataType
+HuffmanTreeFGK<logD, V, NYTvalue>::
 encode(const V v) {
     DataType code;
     auto it = table.find(v);
@@ -86,6 +93,8 @@ decode(DataSrc& src) {
         v = nodes[cur].value;
     } else {
         v = (V) src.readint(bits);
+        if (v == NYTvalue)
+            return NYTvalue;
     }
     update(v);
     // debug();

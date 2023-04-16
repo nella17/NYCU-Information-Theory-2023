@@ -25,6 +25,12 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
         data.write(code);
         timer_progress((double)cnt / 1e8);
     }
+    if (compsize8 % 8) {
+        auto nytcode = ht.getnytcode();
+        auto sz = 8 - compsize8 % 8;
+        nytcode.resize(sz);
+        data.write(nytcode);
+    }
     timer_stop_progress();
 
     timer_start("write file");
