@@ -8,7 +8,7 @@ make -j build
 
 set +e
 
-./bin/debug/huffman-coding.exe \
+time ./bin/debug/huffman-coding.exe \
   $ARGS -d \
   -i "./test.png.${name}.enc" -o "./test.png.${name}.dec"
 if [ $? == 0 ]; then
@@ -22,7 +22,7 @@ fi
 
 echo
 
-./bin/release/huffman-coding.exe \
+time ./bin/release/huffman-coding.exe \
   $ARGS -d \
   -i "./alexnet.pth.${name}.enc" -o "./alexnet.pth.${name}.dec"
 if [ $? == 0 ]; then

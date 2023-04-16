@@ -16,6 +16,9 @@ public:
     HuffmanTreeFGK(size_t);
     size_t height() const;
 
+    DataType getcode_by_idx(size_t);
+    DataType getcode(V);
+
     DataType encode(const V);
     V decode(DataSrc&);
 
@@ -24,24 +27,27 @@ public:
 private:
     struct Node {
         bool leaf;
+        size_t idx, order, parent;
         size_t freq, height;
         union {
             V value;
             std::array<size_t, D> cls;
         };
-        Node();
-        Node(V);
+        Node(size_t, size_t, size_t, V);
     };
 
-    size_t newNode();
-    size_t newNode(V);
+    size_t newNode(V, size_t, size_t = 1);
 
-    void update(size_t);
+    void update(V);
+    void inc(size_t);
+    void swap(size_t, size_t);
 
-    // /TODO
-    // std::unordered_map<V, DataType> table;
-    std::unordered_map<size_t, std::set<size_t>> weightIds;
+    std::unordered_map<V, size_t> table;
+    std::unordered_map<size_t, std::set<size_t>> freqIds;
 
     size_t root, NYT;
     std::vector<Node> nodes;
+    std::vector<size_t> orders;
+
+    void debug();
 };

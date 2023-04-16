@@ -18,11 +18,21 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
 
     timer_start_progress("compress file");
     for (size_t cnt = 0; !src.eof(); cnt++) {
-        uint64_t value = src.readint(opts.bits);
+        auto value = src.readint(opts.bits);
+
+        // std::cerr << std::hex << value << " " << cnt << std::endl;
+
         auto code = ht.encode(value);
+
+        /*
+        std::cerr << std::hex << value << " -> " << code << std::endl;
+        src.nextbyte();
+        // getchar();
+        //*/
+
         compsize8 += code.size();
         dst.write(code);
-        timer_progress(double(cnt));
+        timer_progress((double)cnt / 3e8);
     }
     timer_stop_progress();
 
@@ -44,7 +54,28 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
 
 size_t Adaptive::decode(DataSrc& src, DataDst& dst) {
     HuffmanTreeFGK ht(opts.bits);
-    // TODO
+
+    // timer_start_progress("decompress file");
+    Data data;
+    for (size_t cnt = 0; !src.eof(); cnt++) {
+        // auto value = ht.decode(src);
+        auto value = src.readint(opts.bits);
+        std::cerr << " -> " << std::hex << value << std::endl;
+        // data.writeint(opts.bits, value);
+        // timer_progress(double(cnt) / double(total));
+    }
+    // src.back(data.size() - origsize * 8);
+    // data.resize(origsize * 8);
+    // timer_stop_progress();
+
+    auto dsize = data.size() / 8;
+    if (opts.verbose) {
+        std::cerr
+            << "Decompressed size: " << dsize << " bytes\n"
+            << std::flush;
+    }
+
+    return dsize;
 }
 
 }
