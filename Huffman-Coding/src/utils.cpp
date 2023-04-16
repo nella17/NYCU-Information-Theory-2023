@@ -30,16 +30,19 @@ void timer_start_progress(std::string s) {
 void timer_progress(double p) {
     p *= 100;
     if (p - progress >= 0.05) {
-        if (!opts.notime)
-            std::cerr << std::string((size_t)size, '\b');
         auto end = std::chrono::steady_clock::now();
         std::chrono::duration<double> elapsed_seconds = end - start;
         auto cnt = elapsed_seconds.count();
-        char buf[16];
-        progress = p;
-        size = snprintf(buf, sizeof(buf), "%.1f%% %.1fs", progress, cnt);
-        if (!opts.notime)
-            std::cerr << buf << std::flush;
+        if (cnt - last >= 0.1) {
+            last = cnt;
+            progress = p;
+            char buf[0x30];
+            if (!opts.notime)
+                std::cerr << std::string((size_t)size, '\b');
+            size = snprintf(buf, sizeof(buf), "%.1f%% %.1fs", progress, cnt);
+            if (!opts.notime)
+                std::cerr << buf << std::flush;
+        }
     }
 }
 double timer_stop_progress() {
