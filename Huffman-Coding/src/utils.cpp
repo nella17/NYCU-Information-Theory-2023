@@ -6,6 +6,11 @@
 
 #include "options.hpp"
 
+std::ostream& operator<<(std::ostream& os, DataType dt) {
+    for (auto x: dt) os << x;
+    return os;
+}
+
 auto start = std::chrono::steady_clock::now();
 void timer_start(std::string s) {
     if (!opts.notime) std::cerr << "[timer] " << s << " ... " << std::flush;

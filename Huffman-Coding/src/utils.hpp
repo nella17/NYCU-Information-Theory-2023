@@ -13,6 +13,8 @@ constexpr auto INF_SIZET = std::numeric_limits<size_t>::max();
 using DataType = std::vector<bool>;
 using CharValue = std::bitset<8>;
 
+std::ostream& operator<<(std::ostream&, DataType);
+
 void timer_start(std::string);
 double timer_stop();
 
