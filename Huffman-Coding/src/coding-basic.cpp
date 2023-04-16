@@ -35,12 +35,15 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
 
     auto entropy = calc_entropy(freq);
     if (opts.verbose) {
-        std::cerr << "Entropy: " << entropy << '\n'
+        std::cerr
+            << "Entropy: " << entropy << '\n'
             << "Max compress rate: "
                 << std::setw(5) << std::setprecision(2) << std::fixed
                 << 100 * ((double)opts.bits - entropy) / double(opts.bits) << "%\n"
-            << "Charset size: " << freq.size() << '\n'
-            << "Freq:";
+            << "Charset size: " << freq.size() << std::endl;
+    }
+    if (opts.pmf) {
+        std::cerr << "Freq:";
         for (auto [c, v]: freq)
             std::cerr << ' ' << c;
         std::cerr << std::endl;

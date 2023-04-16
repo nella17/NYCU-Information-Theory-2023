@@ -18,6 +18,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -b, --bits <bits>       Tread input file as <bits> data source (default 8)
     -s, --split <size>      Split input file every <size> bytes of data (default ∞)
     -v, --verbose           Show debug / analysis /time info
+    --pmf                   Show pmf freq
     --no-time               No show time info
     --stream                Stream compress
 
@@ -37,6 +38,7 @@ const struct option longopts[] = {
     { "bits",   required_argument,  0,  'b' },
     { "split",  required_argument,  0,  's' },
     { "verbose",no_argument,        0,  'v' },
+    { "pmf",    no_argument,        &opts.pmf,      1  },
     { "no-time",no_argument,        &opts.notime,   1  },
     { "stream", no_argument,        &opts.stream,   1  },
     { 0,        0,                  0,   0  },
@@ -99,6 +101,7 @@ void Options::parse(int argc, char* const argv[]) {
     }
 
     if (stream) assert(!(bool)"TODO options: stream");
+    // stream = type == "adaptive";
 
     bool check = true;
     check &= encode ^ decode;
