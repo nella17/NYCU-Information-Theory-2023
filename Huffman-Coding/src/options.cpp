@@ -21,6 +21,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
     -v, --verbose           Show debug / analysis /time info
     --pmf                   Show pmf freq
     --no-time               No show time info
+    -h, --help              Show this help
 
 Coding Algorithms
     analysis    Analysis entropy
@@ -29,7 +30,7 @@ Coding Algorithms
     extended    Extended Huffman Coding Algorithm
 )";
 
-const char optstring[] = "t:edi:o:b:s:v";
+const char optstring[] = "t:edi:o:b:s:vh";
 const struct option longopts[] = {
     { "type",   required_argument,  0,  't' },
     { "encode", no_argument,        0,  'e' },
@@ -42,6 +43,7 @@ const struct option longopts[] = {
     { "verbose",no_argument,        0,  'v' },
     { "pmf",    no_argument,        &opts.pmf,      1  },
     { "no-time",no_argument,        &opts.notime,   1  },
+    { "help",   no_argument,        0,  'h' },
     { 0,        0,                  0,   0  },
 };
 
@@ -98,6 +100,7 @@ void Options::parse(int argc, char* const argv[]) {
            notime = 0;
            break;
 
+       case 'h':
        default:
            USAGE();
        }
