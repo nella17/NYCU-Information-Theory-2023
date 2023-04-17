@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-. config.sh
+. ./scripts/config.sh
 
 DEBUG=1 make -j build
 make -j build
