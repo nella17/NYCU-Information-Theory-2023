@@ -4,7 +4,7 @@ This is a implementation of Huffman Coding in C++, including basic, adaptive and
 
 ## Build
 
-Use `make` to build the binary, and use `make clean` to cleanup.
+Use `make build` to build the binary, and use `make clean` to cleanup.
 The binary will be generated at `bin/release/huffman-coding.exe`.
 
 ## Usage
