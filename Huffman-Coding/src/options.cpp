@@ -50,60 +50,60 @@ const struct option longopts[] = {
 
 void Options::parse(int argc, char* const argv[]) {
     while (1) {
-       int optidx = 0;
-       int c = getopt_long(argc, argv, optstring, longopts, &optidx);
-       if (c == -1)
-           break;
+        int optidx = 0;
+        int c = getopt_long(argc, argv, optstring, longopts, &optidx);
+        if (c == -1)
+            break;
 
-       switch (c) {
-       case 0:
-           break;
+        switch (c) {
+            case 0:
+                break;
 
-       case 't':
-           type = optarg;
-           if (type == "basic")
-              stream = false;
-           break;
+            case 't':
+                type = optarg;
+                if (type == "basic")
+                    stream = false;
+                break;
 
-       case 'e':
-           encode = true;
-           break;
+            case 'e':
+                encode = true;
+                break;
 
-       case 'd':
-           decode = true;
-           break;
+            case 'd':
+                decode = true;
+                break;
 
-       case 'i':
-           if (input_fd != STDIN_FILENO)
-               close(input_fd);
-           input_fd = open(optarg, O_RDONLY);
-           if (input_fd < 0) perror("open(input)"), exit(EXIT_FAILURE);
-           break;
+            case 'i':
+                if (input_fd != STDIN_FILENO)
+                    close(input_fd);
+                input_fd = open(optarg, O_RDONLY);
+                if (input_fd < 0) perror("open(input)"), exit(EXIT_FAILURE);
+                break;
 
-       case 'o':
-           if (output_fd != STDOUT_FILENO)
-               close(output_fd);
-           output_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC, 0644);
-           if (output_fd < 0) perror("open(output)"), exit(EXIT_FAILURE);
-           break;
+            case 'o':
+                if (output_fd != STDOUT_FILENO)
+                    close(output_fd);
+                output_fd = open(optarg, O_WRONLY | O_CREAT | O_TRUNC, 0644);
+                if (output_fd < 0) perror("open(output)"), exit(EXIT_FAILURE);
+                break;
 
-       case 'b':
-           bits = (size_t)atoi(optarg);
-           break;
+            case 'b':
+                bits = (size_t)atoi(optarg);
+                break;
 
-       case 's':
-           split = (size_t)atoi(optarg);
-           break;
+            case 's':
+                split = (size_t)atoi(optarg);
+                break;
 
-       case 'v':
-           verbose = true;
-           notime = 0;
-           break;
+            case 'v':
+                verbose = true;
+                notime = 0;
+                break;
 
-       case 'h':
-       default:
-           USAGE();
-       }
+            case 'h':
+            default:
+                USAGE();
+        }
     }
 
     bool check = true;
