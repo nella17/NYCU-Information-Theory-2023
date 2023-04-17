@@ -27,7 +27,7 @@ Coding Algorithms
     analysis    Analysis entropy
     basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
     adaptive    Adaptive Huffman Coding Algorithm
-    extended    Extended Huffman Coding Algorithm
+    extended    Extended Huffman Coding Algorithm (TODO)
 )";
 
 const char optstring[] = "t:edi:o:b:s:vh";
