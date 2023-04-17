@@ -26,6 +26,7 @@ HuffmanTreeFGK<logD, V, NYTvalue>::
 HuffmanTreeFGK(size_t _b):
     bits(_b), nodes{}
 {
+    nodes.reserve(1 << std::min(16lu, bits));
     root = NYT = newNode(NYTvalue, 0, 0);
 }
 

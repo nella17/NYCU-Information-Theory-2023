@@ -53,10 +53,10 @@ size_t Adaptive::encode(DataSrc& src, DataDst& dst) {
 
     if (opts.verbose) {
         std::cerr
-            << "Tree Height: " << ht.height() << '\n'
-            << "Original size: " << origsize << " bytes\n"
-            << "Compressed size: " << compsize << " bytes (" << compsize8 << " bits)\n"
-            << "Compression rate: "
+            << "Tree Height:        " << ht.height() << '\n'
+            << "Original size:      " << origsize << " bytes\n"
+            << "Compressed size:    " << compsize << " bytes (" << compsize8 << " bits)\n"
+            << "Compression ratio:  "
                 << std::setw(5) << std::setprecision(2) << std::fixed
                 << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
             << std::flush;
@@ -94,9 +94,9 @@ size_t Adaptive::decode(DataSrc& src, DataDst& dst) {
 
     if (opts.verbose) {
         std::cerr
-            << "Tree size: " << ht.height() << '\n'
-            << "Compressed size: " << compsize << " bytes (" << compsize8 << " bits)\n"
-            << "Decompressed size: " << dsize << " bytes\n"
+            << "Tree size:          " << ht.height() << '\n'
+            << "Compressed size:    " << compsize << " bytes (" << compsize8 << " bits)\n"
+            << "Decompressed size:  " << dsize << " bytes\n"
             << std::flush;
     }
 

@@ -36,12 +36,12 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
     auto entropy = calc_entropy(freq);
     if (opts.verbose) {
         std::cerr
-            << "Entropy:            " << entropy << '\n'
-            << "Entropy (per byte): " << entropy / ((double)opts.bits / 8) << '\n'
-            << "Max compress rate:  "
+            << "Entropy:                " << entropy << '\n'
+            << "Entropy (per byte):     " << entropy / ((double)opts.bits / 8) << '\n'
+            << "Max compression ratio:  "
                 << std::setw(5) << std::setprecision(2) << std::fixed
                 << 100 * ((double)opts.bits - entropy) / double(opts.bits) << "%\n"
-            << "Charset size:       " << freq.size() << std::endl;
+            << "Charset size:           " << freq.size() << std::endl;
     }
     if (opts.pmf) {
         std::cerr << "Freq: ";
@@ -57,8 +57,8 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
     timer_stop();
     if (opts.verbose) {
         std::cerr
-            << "Tree Height:        " << ht.height() << '\n'
-            << "Tree size:          " << treedata.size() << '\n'
+            << "Tree Height:            " << ht.height() << '\n'
+            << "Tree size:              " << treedata.size() << '\n'
             << std::flush;
     }
 
@@ -82,7 +82,7 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
     dst.write(treedata);
     dst.writeint(32, origsize);
     dst.write(data);
-    dst.write(true);
+    dst.write(opts.split == INF_SIZET);
     timer_stop();
 
     // for (auto x: data)
@@ -95,7 +95,7 @@ size_t Basic::encode(DataSrc& src, DataDst& dst) {
         std::cerr
             << "Original size    (split):   " << origsize << " bytes\n"
             << "Compressed size  (split):   " << compsize << " bytes (" << data.size() << " bits)\n"
-            << "Compression rate (split):   "
+            << "Compression ratio (split):  "
                 << std::setw(5) << std::setprecision(2) << std::fixed
                 << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
             << std::flush;
@@ -146,7 +146,7 @@ size_t Basic::decode(DataSrc& src, DataDst& dst) {
 
     timer_start("write file");
     dst.write(data);
-    dst.write(true);
+    dst.write(opts.split == INF_SIZET);
     timer_stop();
 
     auto dsize = data.size() / 8;

@@ -18,15 +18,18 @@ signed main(int argc, char* const argv[]) {
 
         std::unordered_map<uint64_t, size_t> map{};
         DataSrc src(false, opts.input_fd);
-        size_t origsize = src.size() / 8;
-        size_t total = src.size() / opts.bits;
+        // size_t origsize = src.size() / 8;
+        size_t total = src.total() / opts.bits, cnt = 0;
 
+        src.resplit(opts.split);
         timer_start_progress("calculate pmf");
-        for (size_t cnt = 0; !src.eof(); cnt++) {
-            uint64_t value = src.readint(opts.bits);
-            map[value] += 1;
-            timer_progress(double(cnt) / double(total));
-        }
+        do {
+            for (; !src.eof(); cnt++) {
+                uint64_t value = src.readint(opts.bits);
+                map[value] += 1;
+                timer_progress(double(cnt) / double(total));
+            }
+        } while (src.nextsplit());
         timer_stop_progress();
 
         std::vector<std::pair<size_t, uint64_t>> freq;
@@ -68,7 +71,7 @@ signed main(int argc, char* const argv[]) {
     std::cerr
         << "Compressed size:        " << compsize << " bytes\n"
         << "Original size:          " << origsize << " bytes\n"
-        << "Compression rate:       "
+        << "Compression ratio:      "
             << std::setw(5) << std::setprecision(2) << std::fixed
             << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
         << "Expected codeword length (include header): "
