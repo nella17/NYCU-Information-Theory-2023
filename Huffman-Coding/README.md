@@ -57,6 +57,25 @@ diff ./alexnet.pth ./alexnet.pth.basic.8.dec && echo "OK" || echo "Failed"
 rm ./alexnet.pth.basic.8.enc ./alexnet.pth.basic.8.dec
 ```
 
+### Basic Huffman Coding with Split every 40MB
+
+`./scripts/example-basic-split-40MB.sh`
+
+```bash
+# encode
+./bin/release/huffman-coding.exe \
+  -t basic -b 8 -v -e -s 41943040 \
+  -i ./alexnet.pth -o "./alexnet.pth.basic.8.s40MB.enc"
+# decode
+./bin/release/huffman-coding.exe \
+  -t basic -b 8 -v -d -s 41943040 \
+  -i "./alexnet.pth.basic.8.s40MB.enc" -o "./alexnet.pth.basic.8.s40MB.dec"
+# verify
+diff ./alexnet.pth ./alexnet.pth.basic.8.s40MB.dec && echo "OK" || echo "Failed"
+# cleanup
+rm ./alexnet.pth.basic.8.s40MB.enc ./alexnet.pth.basic.8.s40MB.dec
+```
+
 ### Adaptive Huffman Coding
 
 Currently, adaptive Huffman Coding only support 8-bits data source.
@@ -83,18 +102,16 @@ rm ./alexnet.pth.adaptive.8.enc ./alexnet.pth.adaptive.8.dec
 `./scripts/example-adaptive-stream.sh`
 
 ```bash
-# encode and decode
+# encode and decode and verify
 ./bin/release/huffman-coding.exe \
   -t adaptive -v --no-time -e \
   -i ./alexnet.pth --ostream \
   | \
 ./bin/release/huffman-coding.exe \
-  -t adaptive -v -d -o \
-  ./alexnet.pth.adaptive.ostream --ostream
-# verify
-diff ./alexnet.pth ./alexnet.pth.adaptive.ostream && echo "OK" || echo "Failed"
-# cleanup
-rm ./alexnet.pth.adaptive.ostream
+  -t adaptive -v -d  --ostream \
+  | \
+diff ./alexnet.pth /dev/stdin \
+  && echo "OK" || echo "Failed"
 ```
 
 ### Extended Huffman Coding
