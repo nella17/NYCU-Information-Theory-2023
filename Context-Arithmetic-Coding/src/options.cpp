@@ -9,37 +9,38 @@
 Options opts;
 
 const char usage[] = R"(
-Usage: %s -t <type> [-e | -d] [options...] [-i <file>] [-o <file>]
+Usage: %s -t <type> -p <model> [-e | -d] [options...] [-b <bits>] [-i <file>] [-o <file>]
     -t, --type <type>       Set coding algorithm
+    -p, --prob <model>      Set probability model
     -e, --encode            Encode
     -d, --decode            Decode
     -i, --input <file>      Set input file (default STDIN)
     -o, --output <file>     Set output file (default STDOUT)
-    --ostream               Output stream
-    -b, --bits <bits>       Tread input file as <bits> data source (default 8)
-    -s, --split <size>      Split input file every <size> bytes of data (default ∞)
+    -b, --bits <bits>       Tread input file as <bits> data source (default 8) (1 / 8)
+    -n, --order <order>     Set PPM context order (default 2)
     -v, --verbose           Show debug / analysis /time info
     --pmf                   Show pmf freq
     --no-time               No show time info
     -h, --help              Show this help
 
 Coding Algorithms
-    analysis    Analysis entropy
-    basic       Basic Huffman Coding Algorithm (bits: 8 <= 8k <= 64)
-    adaptive    Adaptive Huffman Coding Algorithm
-    extended    Extended Huffman Coding Algorithm (TODO)
+    arithmetic  Context Arithmetic Coding Algorithm
+
+Probability Model
+    PPM         Prediction with Partial Match
+    FPM         Fixed Probability Model
 )";
 
-const char optstring[] = "t:edi:o:b:s:vh";
+const char optstring[] = "t:p:edi:o:b:n:vh";
 const struct option longopts[] = {
     { "type",   required_argument,  0,  't' },
+    { "prob",   required_argument,  0,  'p' },
     { "encode", no_argument,        0,  'e' },
     { "decode", no_argument,        0,  'd' },
     { "input",  required_argument,  0,  'i' },
     { "output", required_argument,  0,  'o' },
-    { "ostream",no_argument,        &opts.ostream,  1 },
     { "bits",   required_argument,  0,  'b' },
-    { "split",  required_argument,  0,  's' },
+    { "order",   required_argument,  0,  'n' },
     { "verbose",no_argument,        0,  'v' },
     { "pmf",    no_argument,        &opts.pmf,      1  },
     { "no-time",no_argument,        &opts.notime,   1  },
@@ -61,8 +62,10 @@ void Options::parse(int argc, char* const argv[]) {
 
             case 't':
                 type = optarg;
-                if (type == "basic")
-                    stream = false;
+                break;
+
+            case 'p':
+                model = optarg;
                 break;
 
             case 'e':
@@ -91,8 +94,8 @@ void Options::parse(int argc, char* const argv[]) {
                 bits = (size_t)atoi(optarg);
                 break;
 
-            case 's':
-                split = (size_t)atoi(optarg);
+            case 'n':
+                order = (size_t)atoi(optarg);
                 break;
 
             case 'v':
@@ -108,8 +111,6 @@ void Options::parse(int argc, char* const argv[]) {
 
     bool check = true;
     check &= !type.empty();
-    check &= type == "analysis" or encode ^ decode;
-    check &= type != "basic" or (bits % 8 == 0 and stream == 0);
-    check &= split == INF_SIZET or split % bits == 0;
+    check &= !model.empty();
     if (!check) USAGE();
 }

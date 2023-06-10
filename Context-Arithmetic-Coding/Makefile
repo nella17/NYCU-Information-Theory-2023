@@ -1,5 +1,5 @@
 CXX 	?= g++
-TARGET 	:= huffman-coding.exe
+TARGET 	:= context-arithmetic-coding.exe
 SRCDIR 	:= ./src
 _BINDIR := ./bin
 _OBJDIR := ./obj

@@ -13,38 +13,6 @@
 signed main(int argc, char* const argv[]) {
     opts.parse(argc, argv);
 
-    if (opts.type == "analysis") {
-        opts.notime = 0;
-
-        std::unordered_map<uint64_t, size_t> map{};
-        DataSrc src(false, opts.input_fd);
-        // size_t origsize = src.size() / 8;
-        size_t total = src.total() / opts.bits, cnt = 0;
-
-        src.resplit(opts.split);
-        timer_start_progress("calculate pmf");
-        do {
-            for (; !src.eof(); cnt++) {
-                uint64_t value = src.readint(opts.bits);
-                map[value] += 1;
-                timer_progress(double(cnt) / double(total));
-            }
-        } while (src.nextsplit());
-        timer_stop_progress();
-
-        std::vector<std::pair<size_t, uint64_t>> freq;
-        freq.reserve(map.size());
-        for (auto [v, c]: map)
-            freq.emplace_back(c, v);
-
-        auto entropy = calc_entropy(freq);
-        std::cerr
-            << "Entropy:            " << entropy << '\n'
-            << std::flush;
-
-        return EXIT_SUCCESS;
-    }
-
     auto func = coding::make();
     if (!func) USAGE();
 
@@ -54,17 +22,10 @@ signed main(int argc, char* const argv[]) {
     size_t origsize, compsize;
 
     if (opts.encode) {
-        compsize = 0;
-        src.resplit(opts.split);
-        do {
-            compsize += func->encode(src, dst);
-        } while (src.nextsplit());
+        compsize = func->encode(src, dst);
         origsize = src.total();
     } else {
-        origsize = 0;
-        do {
-            origsize += func->decode(src, dst);
-        } while (!src.eof());
+        origsize = func->decode(src, dst);
         compsize = src.total();
     }
 

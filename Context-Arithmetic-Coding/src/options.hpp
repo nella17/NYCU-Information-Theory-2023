@@ -17,11 +17,11 @@ extern const char usage[];
 
 class Options {
 public:
-    std::string type;
-    bool encode = false, decode = false, verbose = false, stream = true;
+    std::string type, model;
+    bool encode = false, decode = false, verbose = false, stream = false;
     int notime = 1, pmf = 0, ostream = 0;
     int input_fd = STDIN_FILENO, output_fd = STDOUT_FILENO;
-    size_t bits = 8, split = INF_SIZET;
+    size_t bits = 8, order = 2;
 
     void parse(int argc, char* const argv[]);
 };
