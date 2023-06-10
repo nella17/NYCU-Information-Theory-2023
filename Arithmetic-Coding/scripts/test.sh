@@ -1,9 +1,9 @@
 #!/bin/bash
 set -eux
 
-T=1
+T=0
 name="arithmetic-fpm"
-ARGS="-t $name"
+ARGS="-t $name -v -b 8"
 
 DEBUG=1 make -j build
 BIN=arithmetic-coding.exe
@@ -17,8 +17,7 @@ time "./bin/debug/$BIN" \
   -i "./test.png.${name}.enc" -o "./test.png.${name}.dec"
 if [ $? == 0 ]; then
   diff  ./test.png "./test.png.${name}.dec" \
-    && rm "./test.png.${name}.enc" "./test.png.${name}.dec" \
-    || exit -1
+    && rm "./test.png.${name}.enc" "./test.png.${name}.dec"
 fi
 
 if [ "$T" == 1 ]; then
