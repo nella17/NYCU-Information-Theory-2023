@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eux
 
-T=1
+T=0
 B=8
 A='arithmetic-ppm'
 name="$A.$B"

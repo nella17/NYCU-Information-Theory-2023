@@ -11,25 +11,25 @@
 
 class Context {
 public:
-    static constexpr uint16_t MAX_CHARSET = 257;
-    using Range = std::tuple<uint16_t, uint16_t, uint16_t>;
+    static constexpr uint32_t MAX_CHARSET = 257;
+    using Range = std::tuple<uint32_t, uint32_t, uint32_t>;
     using Bits = std::bitset<MAX_CHARSET>;
 
     Context* const parent;
     const int order;
-    const uint16_t charset;
+    const uint32_t charset;
     size_t size;
     Bits used;
     std::vector<uint32_t> count;
     std::vector<Context*> next;
 
-    Context(Context*, int, uint16_t);
-    void inc(uint16_t);
-    bool has(uint16_t);
-    Range range(uint16_t, Bits = 0);
-    Context* get(uint16_t);
+    Context(Context*, int, uint32_t);
+    void inc(uint32_t);
+    bool has(uint32_t);
+    Range range(uint32_t, Bits = 0);
+    Context* get(uint32_t);
     Arithmetic::Accum getacc(Bits = 0);
-    uint16_t i2s(uint32_t, Bits = 0);
+    uint32_t i2s(uint32_t, Bits = 0);
 };
 
 std::ostream& operator<<(std::ostream&, const Context&);

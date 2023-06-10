@@ -32,18 +32,21 @@ DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
         U <<= 1; U[0] = 1;
         if (!E3) {
             bs.emplace_back(b);
-            b ^= 1;
             for (int i = 0; i < scale3; i++)
-                bs.emplace_back(b);
+                bs.emplace_back(b ^ 1);
             scale3 = 0;
+            // std::cerr _ 'E' << char('1' + b ^ 1);
         } else {
             L[BITS-1] = L[BITS-1] ^ 1;
             U[BITS-1] = U[BITS-1] ^ 1;
             scale3++;
+            // std::cerr _ "E3";
         }
     }
 
+    // std::cerr _ std::endl;
     // for (auto x: bs) std::cerr << x; std::cerr << std::endl;
+    // std::cerr _ L _ U _ std::endl;
 
     return bs;
 }
@@ -54,7 +57,7 @@ uint32_t Arithmetic::recv(DataSrc& src, const Arithmetic::Accum& accum) {
         / (U.to_ullong() - L.to_ullong() + 1)
     );
 
-    // std::cerr _ code _ T _ std::endl _ L _ U _ std::endl;
+    // std::cerr _ code _ T _ std::endl;
 
     auto size = accum.size();
     uint32_t idx = 0;
@@ -63,6 +66,10 @@ uint32_t Arithmetic::recv(DataSrc& src, const Arithmetic::Accum& accum) {
 
     if (idx+1 < size)
         recv(src, accum[idx], accum[idx+1], accum.back());
+    // else
+    //     std::cerr _ "skip recv update" _ std::endl;
+
+    // std::cerr _ L _ U _ std::endl;
 
     return idx;
 }
@@ -74,13 +81,18 @@ void Arithmetic::recv(DataSrc& src, uint32_t cL, uint32_t cR, uint32_t size) {
         auto E3 = L[BITS-1] == 0 and L[BITS-2] == 1 and U[BITS-1] == 1 and U[BITS-2] == 0;
         if (L[BITS-1] != U[BITS-1] and !E3)
             break;
+        auto b = (int)L[BITS-1];
         L <<= 1; L[0] = 0;
         U <<= 1; U[0] = 1;
         T <<= 1; T[0] = src.nextbit();
-        if (E3) {
+        if (!E3) {
+            // std::cerr _ 'E' << char('1' + b);
+        } else {
             L[BITS-1] = L[BITS-1] ^ 1;
             U[BITS-1] = U[BITS-1] ^ 1;
             T[BITS-1] = T[BITS-1] ^ 1;
+            // std::cerr _ "E3";
         }
     }
+    // std::cerr _ std::endl;
 }

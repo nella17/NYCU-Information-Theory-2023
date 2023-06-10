@@ -12,8 +12,8 @@ namespace coding {
 
 ArithmeticPPM::ArithmeticPPM():
     Base(),
-    bits((uint16_t)opts.bits),
-    charset((uint16_t)(1 << bits)),
+    bits((uint32_t)opts.bits),
+    charset((uint32_t)(1 << bits)),
     order(opts.order),
     base(charset+1),
     root(nullptr)
@@ -39,7 +39,7 @@ Context* ArithmeticPPM::find(const History& history) {
     return ctx;
 }
 
-void ArithmeticPPM::update(const History& history, uint16_t symbol) {
+void ArithmeticPPM::update(const History& history, uint32_t symbol) {
     if (order < 0) return;
     root->inc(symbol);
     auto ctx = root;
@@ -59,7 +59,7 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
     timer_start_progress("compress file");
         src.reset();
         for (size_t i = 0; i <= size; i++) {
-            uint16_t symbol = i == size ? charset : (uint16_t)src.readint(bits);
+            uint32_t symbol = i == size ? charset : (uint32_t)src.readint(bits);
 
             // std::cerr << "round" _ i _ symbol _ std::endl;
             // std::cerr _ "history" _ history.size() _ ':';
@@ -68,7 +68,6 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
 
             auto ctx = find(history);
             Context::Bits skip(0);
-
 
             uint32_t cL, cR, total;
 
@@ -149,7 +148,7 @@ size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
             // for (auto x: history) std::cerr _ char(x);
             // std::cerr _ std::endl;
 
-            uint16_t symbol = charset;
+            uint32_t symbol = charset;
 
             while (ctx != nullptr) {
                 auto acc = ctx->getacc(skip);
@@ -157,7 +156,7 @@ size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
                 // for (auto x: acc) std::cerr _ x; std::cerr _ std::endl;
                 if (acc.back() > 1) {
                     auto idx = code.recv(src, acc);
-                    symbol = ctx->i2s(idx);
+                    symbol = ctx->i2s(idx, skip);
                     // std::cerr _ "recv" _ idx _ symbol _ char(symbol) _ std::endl;
                     if (symbol != charset)
                         break;
@@ -167,7 +166,7 @@ size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
             }
 
             if (symbol == charset) {
-                symbol = (uint16_t)code.recv(src, base);
+                symbol = (uint32_t)code.recv(src, base);
                 // std::cerr _ "recv(-)" _ symbol _ char(symbol) _ std::endl;
             }
 
