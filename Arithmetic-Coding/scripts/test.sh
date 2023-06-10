@@ -6,7 +6,7 @@ name="arithmetic-fpm"
 ARGS="-t $name"
 
 DEBUG=1 make -j build
-BIN=context-arithmetic-coding.exe
+BIN=arithmetic-coding.exe
 
 time "./bin/debug/$BIN" \
   $ARGS -e \
