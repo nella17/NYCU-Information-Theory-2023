@@ -26,10 +26,10 @@ public:
     Context(Context*, int, uint32_t);
     void inc(uint32_t);
     bool has(uint32_t);
-    Range range(uint32_t, Bits = 0);
+    Range range(uint32_t, Bits);
     Context* get(uint32_t);
-    Arithmetic::Accum getacc(Bits = 0);
-    uint32_t i2s(uint32_t, Bits = 0);
+    Arithmetic::Accum getacc(Bits);
+    uint32_t i2s(uint32_t, Bits);
 };
 
 std::ostream& operator<<(std::ostream&, const Context&);
