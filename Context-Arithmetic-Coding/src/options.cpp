@@ -9,9 +9,8 @@
 Options opts;
 
 const char usage[] = R"(
-Usage: %s -t <type> -p <model> [-e | -d] [options...] [-b <bits>] [-i <file>] [-o <file>]
+Usage: %s -t <type> [-e | -d] [options...] [-b <bits>] [-i <file>] [-o <file>]
     -t, --type <type>       Set coding algorithm
-    -p, --prob <model>      Set probability model
     -e, --encode            Encode
     -d, --decode            Decode
     -i, --input <file>      Set input file (default STDIN)
@@ -24,17 +23,13 @@ Usage: %s -t <type> -p <model> [-e | -d] [options...] [-b <bits>] [-i <file>] [-
     -h, --help              Show this help
 
 Coding Algorithms
-    arithmetic  Context Arithmetic Coding Algorithm
-
-Probability Model
-    PPM         Prediction with Partial Match
-    FPM         Fixed Probability Model
+    arithmetic-ppm  Context Arithmetic Coding Algorithm (Prediction with Partial Match)
+    arithmetic-fpm  Arithmetic Coding Algorithm (Fixed Probability Model)
 )";
 
-const char optstring[] = "t:p:edi:o:b:n:vh";
+const char optstring[] = "t:edi:o:b:n:vh";
 const struct option longopts[] = {
     { "type",   required_argument,  0,  't' },
-    { "prob",   required_argument,  0,  'p' },
     { "encode", no_argument,        0,  'e' },
     { "decode", no_argument,        0,  'd' },
     { "input",  required_argument,  0,  'i' },
@@ -62,10 +57,6 @@ void Options::parse(int argc, char* const argv[]) {
 
             case 't':
                 type = optarg;
-                break;
-
-            case 'p':
-                model = optarg;
                 break;
 
             case 'e':
@@ -111,6 +102,5 @@ void Options::parse(int argc, char* const argv[]) {
 
     bool check = true;
     check &= !type.empty();
-    check &= !model.empty();
     if (!check) USAGE();
 }
