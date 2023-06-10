@@ -14,9 +14,11 @@ public:
 
     const std::vector<uint32_t> accum;
     const uint32_t size;
-    std::bitset<BITS> L, U;
+    std::bitset<BITS> L, U, T;
     int scale3;
     Arithmetic(std::vector<uint32_t>&);
 
+    void update(uint32_t);
     DataType send(uint32_t);
+    uint32_t recv(DataSrc&);
 };

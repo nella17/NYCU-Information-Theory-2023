@@ -43,4 +43,5 @@ public:
     Data readdata(const size_t);
 
     uint64_t readint(size_t);
+    uint64_t peekint(size_t);
 };

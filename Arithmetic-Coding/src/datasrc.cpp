@@ -193,3 +193,17 @@ uint64_t DataSrc::readint(size_t bits) {
     return ret;
 }
 
+
+uint64_t DataSrc::peekint(size_t bits) {
+    auto saved = datacur;
+    uint64_t ret = 0;
+    size_t i = 0;
+    for (; i < bits and datacur % 8; i++)
+        ret = (ret << 1) | nextbit();
+    for (; i + 8 <= bits and datacur / 8 + 1 <= end; i += 8)
+        ret = (ret << 8) | nextbyte();
+    for (; i < bits; i++)
+        ret = (ret << 1) | nextbit();
+    datacur = saved;
+    return ret;
+}
