@@ -14,8 +14,11 @@ ArithmeticPPM::ArithmeticPPM():
     Base(),
     bits((uint16_t)opts.bits),
     charset((uint16_t)(1 << bits)),
-    order(opts.order), root(nullptr)
+    order(opts.order),
+    base(charset+1),
+    root(nullptr)
 {
+    std::iota(base.begin(), base.end(), 0);
     assert(charset+1 <= Context::MAX_CHARSET);
     if (order >= 0)
         root = new Context(nullptr, order, charset+1);
@@ -95,7 +98,6 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
             data.write(bs);
 
             update(history, symbol);
-
             history.emplace_front(symbol);
             if ((int)history.size() > order)
                 history.pop_back();
@@ -106,6 +108,7 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
     timer_stop_progress();
 
     timer_start("write file");
+        dst.writeint(32, origsize);
         dst.write(data);
         dst.write(true);
     timer_stop();
@@ -126,7 +129,76 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
 }
 
 size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
-    // TODO
+    auto total_compsize = src.total();
+    auto compsize = total_compsize;
+
+    auto origsize = src.readint(32);
+    auto size = origsize * 8 / bits;
+
+    Data data;
+    Arithmetic code;
+    History history{};
+    timer_start_progress("decompress file");
+        code.T = src.readint(code.BITS);
+        for (size_t i = 0; i < size; i++) {
+            auto ctx = find(history);
+            Context::Bits skip(0);
+
+            // std::cerr << "round" _ i _ std::endl;
+            // std::cerr _ "history" _ history.size() _ ':';
+            // for (auto x: history) std::cerr _ char(x);
+            // std::cerr _ std::endl;
+
+            uint16_t symbol = charset;
+
+            while (ctx != nullptr) {
+                auto acc = ctx->getacc(skip);
+                // std::cerr << "ctx\n----\n" << *ctx << "----\n" << "acc:";
+                // for (auto x: acc) std::cerr _ x; std::cerr _ std::endl;
+                if (acc.back() > 1) {
+                    auto idx = code.recv(src, acc);
+                    symbol = ctx->i2s(idx);
+                    // std::cerr _ "recv" _ idx _ symbol _ char(symbol) _ std::endl;
+                    if (symbol != charset)
+                        break;
+                }
+                skip |= ctx->used;
+                ctx = ctx->parent;
+            }
+
+            if (symbol == charset) {
+                symbol = (uint16_t)code.recv(src, base);
+                // std::cerr _ "recv(-)" _ symbol _ char(symbol) _ std::endl;
+            }
+
+            data.writeint(bits, symbol);
+
+            update(history, symbol);
+            history.emplace_front(symbol);
+            if ((int)history.size() > order)
+                history.pop_back();
+
+            if (i % STEP == 0)
+                timer_progress((double)i / (double)size);
+
+            // getchar();
+        }
+    timer_stop_progress();
+
+    timer_start("write file");
+        dst.write(data);
+        dst.write(true);
+    timer_stop();
+
+    auto dsize = data.size() / 8;
+    if (opts.verbose) {
+        std::cerr
+            << "Compressed size:    " << compsize << " bytes (" << src.total() << " bits)\n"
+            << "Decompressed size:  " << dsize << " bytes\n"
+            << std::flush;
+    }
+
+    return dsize;
 }
 
 }

@@ -19,12 +19,13 @@ bool Context::has(uint16_t symbol) {
 
 Context::Range Context::range(uint16_t symbol, Bits skip) {
     uint32_t accum = 0, total = 0;
-    for (uint16_t i = 0; i < symbol; i++)
-        if (!skip[i])
-            accum += count[i];
-    for (uint16_t i = 0; i < charset; i++)
-        if (!skip[i])
-            total += count[i];
+    for (uint16_t s = 0; s < charset; s++) {
+        if (!skip[s]) {
+            total += count[s];
+            if (s < symbol)
+                accum += count[s];
+        }
+    }
     bool zz = total > 0;
     auto cnt = symbol == charset-1 ? zz : count[symbol];
     return { accum, accum + cnt, total + zz };
@@ -45,4 +46,23 @@ std::ostream& operator<<(std::ostream& os, const Context& ctx) {
         if (ctx.used[s])
             os _ s _ char(s) _ ctx.count[s] _ '\n';
     return os;
+}
+
+Arithmetic::Accum Context::getacc(Bits skip) {
+    Arithmetic::Accum accum{};
+    accum.reserve(2 + (used & ~skip).count());
+    accum.emplace_back(0);
+    for (uint16_t s = 0; s < charset; s++)
+        if (!skip[s] and used[s])
+            accum.emplace_back(accum.back() + count[s]);
+    accum.emplace_back(accum.back() + 1);
+    return accum;
+}
+
+uint16_t Context::i2s(uint32_t idx, Bits skip) {
+    for (uint16_t s = 0, c = 0; s < charset; s++)
+        if (!skip[s] and used[s])
+            if (c++ == idx)
+                return s;
+    return charset-1;
 }

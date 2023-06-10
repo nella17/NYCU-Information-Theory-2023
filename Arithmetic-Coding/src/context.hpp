@@ -7,6 +7,7 @@
 #include <vector>
 #include <utility>
 #include <deque>
+#include "arithmetic-code.hpp"
 
 class Context {
 public:
@@ -27,6 +28,8 @@ public:
     bool has(uint16_t);
     Range range(uint16_t, Bits = 0);
     Context* get(uint16_t);
+    Arithmetic::Accum getacc(Bits = 0);
+    uint16_t i2s(uint32_t, Bits = 0);
 };
 
 std::ostream& operator<<(std::ostream&, const Context&);

@@ -17,6 +17,7 @@ public:
     const uint16_t bits, charset;
     const int order;
 
+    Arithmetic::Accum base;
     Context* root;
 
     ArithmeticPPM();

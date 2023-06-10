@@ -10,7 +10,7 @@ void Arithmetic::update(uint32_t cL, uint32_t cR, uint32_t size) {
     L = vL + d * cL / size;
 }
 
-DataType Arithmetic::send(const std::vector<uint32_t>& accum, uint32_t idx) {
+DataType Arithmetic::send(const Arithmetic::Accum& accum, uint32_t idx) {
     return send(accum[idx], accum[idx+1], accum.back());
 }
 
@@ -48,11 +48,13 @@ DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
     return bs;
 }
 
-uint32_t Arithmetic::recv(DataSrc& src, const std::vector<uint32_t>& accum) {
+uint32_t Arithmetic::recv(DataSrc& src, const Arithmetic::Accum& accum) {
     uint32_t code = (uint32_t)(
         ((T.to_ullong() - L.to_ullong() + 1) * accum.back() - 1)
         / (U.to_ullong() - L.to_ullong() + 1)
     );
+
+    // std::cerr _ code _ T _ std::endl _ L _ U _ std::endl;
 
     auto size = accum.size();
     uint32_t idx = 0;
