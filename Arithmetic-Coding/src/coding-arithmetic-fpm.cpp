@@ -46,13 +46,13 @@ size_t ArithmeticFPM::encode(DataSrc& src, DataDst& dst) {
     timer_stop();
 
     Data data;
-    Arithmetic code(accum);
+    Arithmetic code;
     timer_start_progress("compress file");
         src.reset();
         for (size_t i = 0; i <= size; i++) {
             auto symbol = i == size ? charset : (uint32_t)src.readint(bits);
             auto idx = s2i[symbol];
-            auto bs = code.send(idx);
+            auto bs = code.send(accum, idx);
             data.write(bs);
             if (i % STEP == 0)
                 timer_progress((double)i / (double)size);
@@ -96,11 +96,11 @@ size_t ArithmeticFPM::decode(DataSrc& src, DataDst& dst) {
     timer_stop();
 
     Data data;
-    Arithmetic code(accum);
+    Arithmetic code;
     timer_start_progress("decompress file");
         code.T = src.readint(code.BITS);
         for (size_t i = 0; i < size; i++) {
-            auto idx = code.recv(src);
+            auto idx = code.recv(src, accum);
             auto symbol = i2s[idx];
             data.writeint(bits, symbol);
             if (i % STEP == 0)

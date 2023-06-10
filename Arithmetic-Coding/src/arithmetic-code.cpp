@@ -1,17 +1,21 @@
 #include "arithmetic-code.hpp"
 
-Arithmetic::Arithmetic(std::vector<uint32_t>& _acc):
-    accum(_acc), size(_acc.back()), L(0), U(MAX), scale3(0) {}
+Arithmetic::Arithmetic():
+    L(0), U(MAX), scale3(0) {}
 
-void Arithmetic::update(uint32_t idx) {
+void Arithmetic::update(uint32_t cL, uint32_t cR, uint32_t size) {
     auto vL = L.to_ullong(), vU = U.to_ullong();
     uint64_t d = vU - vL + 1;
-    U = vL + d * accum[idx+1] / size - 1;
-    L = vL + d * accum[idx] / size;
+    U = vL + d * cR / size - 1;
+    L = vL + d * cL / size;
 }
 
-DataType Arithmetic::send(uint32_t idx) {
-    update(idx);
+DataType Arithmetic::send(const std::vector<uint32_t>& accum, uint32_t idx) {
+    return send(accum[idx], accum[idx+1], accum.back());
+}
+
+DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
+    update(cL, cR, size);
 
     DataType bs{};
     while (true) {
@@ -37,9 +41,9 @@ DataType Arithmetic::send(uint32_t idx) {
     return bs;
 }
 
-uint32_t Arithmetic::recv(DataSrc& src) {
+uint32_t Arithmetic::recv(DataSrc& src, const std::vector<uint32_t>& accum) {
     uint32_t code = (uint32_t)(
-        ((T.to_ullong() - L.to_ullong() + 1) * size - 1)
+        ((T.to_ullong() - L.to_ullong() + 1) * accum.back() - 1)
         / (U.to_ullong() - L.to_ullong() + 1)
     );
 
@@ -47,7 +51,13 @@ uint32_t Arithmetic::recv(DataSrc& src) {
     while (accum.at(idx) <= code) idx++;
     idx--;
 
-    update(idx);
+    recv(src, accum[idx], accum[idx+1], accum.back());
+
+    return idx;
+}
+
+void Arithmetic::recv(DataSrc& src, uint32_t cL, uint32_t cR, uint32_t size) {
+    update(cL, cR, size);
 
     while (true) {
         auto E3 = L[BITS-1] == 0 and L[BITS-2] == 1 and U[BITS-1] == 1 and U[BITS-2] == 0;
@@ -62,6 +72,4 @@ uint32_t Arithmetic::recv(DataSrc& src) {
             T[BITS-1] = T[BITS-1] ^ 1;
         }
     }
-
-    return idx;
 }
