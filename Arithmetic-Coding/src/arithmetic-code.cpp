@@ -1,39 +1,37 @@
 #include "arithmetic-code.hpp"
 
-Arithmetic::Arithmetic(Data& _d):
-    data(_d), L(0), U(MAX), scale3(0) {}
+Arithmetic::Arithmetic(std::vector<uint32_t>& _acc):
+    accum(_acc), size(_acc.back()), L(0), U(MAX), scale3(0) {}
 
-void Arithmetic::send(uint64_t cL, uint64_t cU, uint64_t tot) {
-    uint64_t d = U - L + 1;
-    U = L + d * cU / tot - 1;
-    L = L + d * cL / tot;
-    scaling();
-}
+DataType Arithmetic::send(uint32_t symbol) {
+    {
+        auto vL = L.to_ullong(), vU = U.to_ullong();
+        uint64_t d = vU - vL + 1;
+        U = vL + d * accum[symbol+1] / size - 1;
+        L = vL + d * accum[symbol] / size;
+    }
 
-void Arithmetic::scaling() {
     DataType bs{};
     while (true) {
-        if (U <= MAX_HALF) {
-            L = L * 2;
-            U = U * 2;
-            bs.emplace_back(0);
+        if (L[BITS-1] == U[BITS-1]) {
+            auto b = (int)L[BITS-1];
+            L <<= 1; L[0] = 0;
+            U <<= 1; U[0] = 1;
+            bs.emplace_back(b);
+            b ^= 1;
             for (int i = 0; i < scale3; i++)
-                bs.emplace_back(1);
+                bs.emplace_back(b);
             scale3 = 0;
-        } else if (MAX_HALF < L) {
-            L = L * 2 - MAX;
-            U = U * 2 - MAX;
-            bs.emplace_back(1);
-            for (int i = 0; i < scale3; i++)
-                bs.emplace_back(0);
-            scale3 = 0;
-        } else if (MAX14 < L and L < MAX_HALF and U <= MAX34) {
-            L = L * 2 - MAX_HALF;
-            U = U * 2 - MAX_HALF;
+        } else if (L[BITS-1] == 0 and L[BITS-2] == 1 and U[BITS-1] == 1 and U[BITS-2] == 0) {
+            L <<= 1; L[0] = 0;
+            U <<= 1; U[0] = 1;
+            L[BITS-1] = L[BITS-1] ^ 1;
+            U[BITS-1] = U[BITS-1] ^ 1;
             scale3++;
         } else {
             break;
         }
     }
-    data.write(bs);
+
+    return bs;
 }

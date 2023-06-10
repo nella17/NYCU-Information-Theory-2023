@@ -3,21 +3,20 @@
 #include <unistd.h>
 #include <limits>
 #include <bitset>
+#include <vector>
 #include "data.hpp"
+#include "datasrc.hpp"
 
 class Arithmetic {
 public:
-    static constexpr uint64_t BITS = 31;
+    static constexpr uint64_t BITS = 32;
     static constexpr uint64_t MAX = (1ll << BITS) - 1;
-    static constexpr uint64_t MAX_HALF = MAX / 2;
-    static constexpr uint64_t MAX14 = MAX * 1 / 4;
-    static constexpr uint64_t MAX34 = MAX * 3 / 4;
 
-    Data& data;
-    uint64_t L, U;
+    const std::vector<uint32_t> accum;
+    const uint32_t size;
+    std::bitset<BITS> L, U;
     int scale3;
-    Arithmetic(Data&);
+    Arithmetic(std::vector<uint32_t>&);
 
-    void send(uint64_t, uint64_t, uint64_t);
-    void scaling();
+    DataType send(uint32_t);
 };
