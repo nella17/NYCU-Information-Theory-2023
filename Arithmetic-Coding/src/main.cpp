@@ -30,12 +30,12 @@ signed main(int argc, char* const argv[]) {
     }
 
     std::cerr
-        << "Compressed size:        " << compsize << " bytes\n"
-        << "Original size:          " << origsize << " bytes\n"
-        << "Compression ratio:      "
+        << "Compressed size:         " << compsize << " bytes\n"
+        << "Original size:           " << origsize << " bytes\n"
+        << "Compression ratio:       "
             << std::setw(5) << std::setprecision(2) << std::fixed
             << 100 * (double)((int64_t)origsize - (int64_t)compsize) / (double)origsize << "%\n"
-        << "Expected codeword length (include header): "
+        << "Average codeword length: "
             << std::setw(5) << std::setprecision(2) << std::fixed
             << (double)compsize / ((double)origsize / (double)opts.bits) << "\n"
         << std::flush;
