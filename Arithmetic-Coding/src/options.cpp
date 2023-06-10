@@ -86,7 +86,7 @@ void Options::parse(int argc, char* const argv[]) {
                 break;
 
             case 'n':
-                order = (size_t)atoi(optarg);
+                order = atoi(optarg);
                 break;
 
             case 'v':

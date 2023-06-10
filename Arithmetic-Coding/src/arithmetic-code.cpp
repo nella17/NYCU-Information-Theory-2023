@@ -14,7 +14,12 @@ DataType Arithmetic::send(const std::vector<uint32_t>& accum, uint32_t idx) {
     return send(accum[idx], accum[idx+1], accum.back());
 }
 
+#include <iostream>
+#define _ <<' '<<
+
 DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
+    // std::cerr _ "send" _ cL _ cR _ size _ std::endl;
+
     update(cL, cR, size);
 
     DataType bs{};
@@ -38,6 +43,8 @@ DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
         }
     }
 
+    // for (auto x: bs) std::cerr << x; std::cerr << std::endl;
+
     return bs;
 }
 
@@ -47,11 +54,13 @@ uint32_t Arithmetic::recv(DataSrc& src, const std::vector<uint32_t>& accum) {
         / (U.to_ullong() - L.to_ullong() + 1)
     );
 
+    auto size = accum.size();
     uint32_t idx = 0;
-    while (accum.at(idx) <= code) idx++;
+    while (idx < size and accum.at(idx) <= code) idx++;
     idx--;
 
-    recv(src, accum[idx], accum[idx+1], accum.back());
+    if (idx+1 < size)
+        recv(src, accum[idx], accum[idx+1], accum.back());
 
     return idx;
 }

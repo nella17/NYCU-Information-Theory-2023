@@ -1,9 +1,11 @@
 #!/bin/bash
 set -eux
 
-T=0
-name="arithmetic-fpm"
-ARGS="-t $name -v -b 8"
+T=1
+B=8
+A='arithmetic-ppm'
+name="$A.$B"
+ARGS="-t $A -v -b $B -n 2"
 
 DEBUG=1 make -j build
 BIN=arithmetic-coding.exe
