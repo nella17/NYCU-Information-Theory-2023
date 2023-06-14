@@ -5,9 +5,8 @@ Arithmetic::Arithmetic():
 
 DataType Arithmetic::end() {
     DataType bs{};
-    bs.reserve(scale3+1);
-    bs.emplace_back(L[BITS-1]);
-    for (size_t i = 0; i <= scale3; i++)
+    bs.reserve(scale3);
+    for (size_t i = 0; i < scale3; i++)
         bs.emplace_back(L[ BITS-1-i ]);
     return bs;
 }
@@ -38,7 +37,7 @@ DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
         U <<= 1; U[0] = 1;
         if (!E3) {
             bs.emplace_back(b);
-            for (int i = 0; i < scale3; i++)
+            for (size_t i = 0; i < scale3; i++)
                 bs.emplace_back(b ^ 1);
             scale3 = 0;
             // std::cerr _ 'E' << char('1' + b ^ 1);
@@ -87,7 +86,7 @@ void Arithmetic::recv(DataSrc& src, uint32_t cL, uint32_t cR, uint32_t size) {
         auto E3 = L[BITS-1] == 0 and L[BITS-2] == 1 and U[BITS-1] == 1 and U[BITS-2] == 0;
         if (L[BITS-1] != U[BITS-1] and !E3)
             break;
-        auto b = (int)L[BITS-1];
+        // auto b = (int)L[BITS-1];
         L <<= 1; L[0] = 0;
         U <<= 1; U[0] = 1;
         T <<= 1; T[0] = src.nextbit();
