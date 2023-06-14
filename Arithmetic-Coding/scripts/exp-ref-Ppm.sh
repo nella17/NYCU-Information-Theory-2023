@@ -3,14 +3,14 @@ set -eux
 
 mkdir log || true
 
-exec > "log/exp.cmp.Arithmetic.log" 2>&1
+exec > "log/exp.cmp.ref-Ppm.log" 2>&1
 
 F=./alexnet.pth
 
 /usr/bin/time -l -h -p \
-  ../Reference-arithmetic-coding/cpp/AdaptiveArithmeticCompress "$F" "$F.c"
+  ../Reference-arithmetic-coding/cpp/PpmCompress "$F" "$F.c"
 /usr/bin/time -l -h -p \
-  ../Reference-arithmetic-coding/cpp/AdaptiveArithmeticDecompress "$F.c" "$F.c.d"
+  ../Reference-arithmetic-coding/cpp/PpmDecompress "$F.c" "$F.c.d"
 
 ls -l "$F" "$F.c" "$F.c.d"
 

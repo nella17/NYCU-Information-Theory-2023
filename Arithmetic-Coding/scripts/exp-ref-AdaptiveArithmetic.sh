@@ -3,7 +3,7 @@ set -eux
 
 mkdir log || true
 
-exec > "log/exp.cmp.AdaptiveArithmetic.log" 2>&1
+exec > "log/exp.cmp.ref-AdaptiveArithmetic.log" 2>&1
 
 F=./alexnet.pth
 
