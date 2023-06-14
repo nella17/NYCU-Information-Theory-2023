@@ -14,8 +14,10 @@ public:
     using Accum = std::vector<uint32_t>;
 
     std::bitset<BITS> L, U, T;
-    int scale3;
+    size_t scale3;
     Arithmetic();
+
+    DataType end();
 
     void update(uint32_t, uint32_t, uint32_t);
     DataType send(const Accum&, uint32_t);

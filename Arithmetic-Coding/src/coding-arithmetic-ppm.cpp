@@ -104,8 +104,8 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
             if (i % STEP == 0)
                 timer_progress((double)i / (double)size);
         }
-        auto bs = code.send(charset-1, charset, charset);
-        data.write(bs);
+        data.write(code.send(charset, charset+1, charset+1));
+        data.write(code.end());
     timer_stop_progress();
 
     timer_start("write file");

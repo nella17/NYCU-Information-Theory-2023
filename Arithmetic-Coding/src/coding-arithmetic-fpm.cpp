@@ -57,6 +57,7 @@ size_t ArithmeticFPM::encode(DataSrc& src, DataDst& dst) {
             if (i % STEP == 0)
                 timer_progress((double)i / (double)size);
         }
+        data.write(code.end());
     timer_stop_progress();
 
     timer_start("write file");

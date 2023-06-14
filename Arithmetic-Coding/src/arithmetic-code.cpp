@@ -3,6 +3,15 @@
 Arithmetic::Arithmetic():
     L(0), U(MAX), scale3(0) {}
 
+DataType Arithmetic::end() {
+    DataType bs{};
+    bs.reserve(scale3+1);
+    bs.emplace_back(L[BITS-1]);
+    for (size_t i = 0; i <= scale3; i++)
+        bs.emplace_back(L[ BITS-1-i ]);
+    return bs;
+}
+
 void Arithmetic::update(uint32_t cL, uint32_t cR, uint32_t size) {
     auto vL = L.to_ullong(), vU = U.to_ullong();
     uint64_t d = vU - vL + 1;
