@@ -6,6 +6,8 @@
 #include <bitset>
 #include <string>
 #include <vector>
+#include <iostream>
+#define _ <<' '<<
 
 constexpr auto INF_SIZET = std::numeric_limits<size_t>::max();
 

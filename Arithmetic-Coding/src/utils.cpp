@@ -1,6 +1,5 @@
 #include "utils.hpp"
 
-#include <iostream>
 #include <iomanip>
 #include <chrono>
 

@@ -1,5 +1,7 @@
 #include "context.hpp"
 
+#include "util.h"
+
 Context::Context(Context* p, int o, uint32_t ch):
     parent(p),
     order(o), charset(ch),
@@ -40,7 +42,6 @@ Context* Context::get(uint32_t symbol) {
     return next[symbol] = new Context(this, order-1, charset);
 }
 
-#define _ <<' '<<
 std::ostream& operator<<(std::ostream& os, const Context& ctx) {
     for (uint32_t s = 0; s < ctx.charset; s++)
         if (ctx.used[s])

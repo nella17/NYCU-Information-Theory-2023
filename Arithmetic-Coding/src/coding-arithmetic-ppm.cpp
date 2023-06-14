@@ -4,7 +4,6 @@
 #include "options.hpp"
 #include <iostream>
 #include <iomanip>
-#define _ <<' '<<
 
 constexpr size_t STEP = 1000;
 
@@ -203,4 +202,3 @@ size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
 }
 
 }
-

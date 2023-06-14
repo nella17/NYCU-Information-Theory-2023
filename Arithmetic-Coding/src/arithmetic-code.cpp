@@ -23,9 +23,6 @@ DataType Arithmetic::send(const Arithmetic::Accum& accum, uint32_t idx) {
     return send(accum[idx], accum[idx+1], accum.back());
 }
 
-#include <iostream>
-#define _ <<' '<<
-
 DataType Arithmetic::send(uint32_t cL, uint32_t cR, uint32_t size) {
     // std::cerr _ "send" _ cL _ cR _ size _ std::endl;
 
