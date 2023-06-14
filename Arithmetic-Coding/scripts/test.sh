@@ -3,9 +3,10 @@ set -eux
 
 T=0
 B=8
-A='arithmetic-ppm'
-name="$A.$B"
-ARGS="-t $A -v -b $B -n 2"
+O=1
+A='arithmetic-fpm'
+name="$A.$B,$O"
+ARGS="-t $A -v -b $B -n $O"
 
 DEBUG=1 make -j build
 BIN=arithmetic-coding.exe
