@@ -29,11 +29,9 @@ Context* ArithmeticPPM::find(const History& history) {
     if (order < 0) return nullptr;
     auto ctx = root;
     for (auto s: history) {
-        if (!ctx->has(s)) {
-            return ctx;
-        } else {
-            ctx = ctx->get(s);
-        }
+        auto nxt = ctx->find(s);
+        if (!nxt) break;
+        ctx = nxt;
     }
     return ctx;
 }

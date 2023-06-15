@@ -27,6 +27,7 @@ public:
     void inc(uint32_t);
     bool has(uint32_t);
     Range range(uint32_t, Bits);
+    Context* find(uint32_t);
     Context* get(uint32_t);
     Arithmetic::Accum getacc(Bits);
     uint32_t i2s(uint32_t, Bits);

@@ -33,6 +33,13 @@ Context::Range Context::range(uint32_t symbol, Bits skip) {
     return { accum, accum + cnt, total + zz };
 }
 
+Context* Context::find(uint32_t symbol) {
+    if (order <= 0) return nullptr;
+    if (next.empty())
+        return nullptr;
+    return next[symbol];
+}
+
 Context* Context::get(uint32_t symbol) {
     if (order <= 0) return nullptr;
     if (next.empty())
