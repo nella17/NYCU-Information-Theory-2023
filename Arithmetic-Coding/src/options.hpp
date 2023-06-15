@@ -19,7 +19,7 @@ class Options {
 public:
     std::string type;
     bool encode = false, decode = false, verbose = false, stream = false;
-    int notime = 1, pmf = 0, ostream = 0;
+    int notime = 1, skip = 1, pmf = 0, ostream = 0;
     int input_fd = STDIN_FILENO, output_fd = STDOUT_FILENO;
     int order = 2;
     size_t bits = 8;

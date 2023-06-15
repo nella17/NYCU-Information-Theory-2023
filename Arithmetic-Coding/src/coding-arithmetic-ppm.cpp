@@ -78,7 +78,8 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
                     auto bs = code.send(cL, cR, total);
                     data.write(bs);
                 }
-                skip |= ctx->used;
+                if (opts.skip)
+                    skip |= ctx->used;
                 ctx = ctx->parent;
             }
 
@@ -161,7 +162,8 @@ size_t ArithmeticPPM::decode(DataSrc& src, DataDst& dst) {
                     if (symbol != charset)
                         break;
                 }
-                skip |= ctx->used;
+                if (opts.skip)
+                    skip |= ctx->used;
                 ctx = ctx->parent;
             }
 

@@ -20,6 +20,7 @@ Usage: %s -t <type> [-e | -d] [options...] [-b <bits>] [-i <file>] [-o <file>]
     -v, --verbose           Show debug / analysis /time info
     --pmf                   Show pmf freq
     --no-time               No show time info
+    --no-skip               No excludesive in ppm
     -h, --help              Show this help
 
 Coding Algorithms
@@ -39,6 +40,7 @@ const struct option longopts[] = {
     { "verbose",no_argument,        0,  'v' },
     { "pmf",    no_argument,        &opts.pmf,      1  },
     { "no-time",no_argument,        &opts.notime,   1  },
+    { "no-skip",no_argument,        &opts.skip,   0  },
     { "help",   no_argument,        0,  'h' },
     { 0,        0,                  0,   0  },
 };
