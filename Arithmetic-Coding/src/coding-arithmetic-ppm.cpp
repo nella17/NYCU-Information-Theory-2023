@@ -57,8 +57,8 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
     History history{};
     timer_start_progress("compress file");
         src.reset();
-        for (size_t i = 0; i < size; i++) {
-            auto symbol = (uint32_t)src.readint(bits);
+        for (size_t i = 0; i <= size; i++) {
+            auto symbol = i == size ? charset-1 : (uint32_t)src.readint(bits);
 
             // std::cerr << "round" _ i _ symbol _ std::endl;
             // std::cerr _ "history" _ history.size() _ ':';
@@ -103,7 +103,6 @@ size_t ArithmeticPPM::encode(DataSrc& src, DataDst& dst) {
             if (i % STEP == 0)
                 timer_progress((double)i / (double)size);
         }
-        data.write(code.send(charset, charset+1, charset+1));
         data.write(code.end());
     timer_stop_progress();
 
