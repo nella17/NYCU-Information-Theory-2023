@@ -10,6 +10,6 @@ set -eux
   -t arithmetic-ppm -b 8 -n 1 -v -d \
   -i "./alexnet.pth.ppm.8.1.enc" -o "./alexnet.pth.ppm.8.1.dec"
 # verify
-diff ./alexnet.pth ./alexnet.pth.ppm.8.dec && echo "OK" || echo "Failed"
+diff ./alexnet.pth ./alexnet.pth.ppm.8.1.dec && echo "OK" || echo "Failed"
 # cleanup
 rm ./alexnet.pth.ppm.8.1.enc ./alexnet.pth.ppm.8.1.dec
