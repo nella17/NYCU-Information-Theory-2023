@@ -2,9 +2,9 @@
 set -eux
 
 T=0
-B=1
+B=8
 O=1
-A='arithmetic-fpm'
+A='arithmetic-ppm'
 name="$A.$B,$O"
 ARGS="-t $A -v -b $B -n $O"
 

@@ -5,8 +5,9 @@ if [ ! -n "$ID" ]; then
 fi
 
 rm -fr "$ID.zip"
-mkdir "$ID"
-cp -r src scripts Makefile README.md "$ID"
+mkdir "$ID" "$ID/scripts"
+cp -r src Makefile README.md "$ID"
+cp scripts/exp.sh scripts/test-report.sh "$ID/scripts"
 zip -r "$ID.zip" "$ID" -x "*/.DS_Store" -x "__MACOSX"
 rm -fr "$ID"
 cp report/report.pdf "$ID.pdf"
