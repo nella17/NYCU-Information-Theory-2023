@@ -11,7 +11,7 @@ The binary will be generated at `bin/release/arithmetic-coding.exe`.
 
 ### Example
 
-There is a experiment shell scripts in `scripts/exp.sh`.
+There are some example shell scripts in `scripts` folder.
 
 ### Help
 
@@ -34,4 +34,42 @@ Usage: ./bin/release/arithmetic-coding.exe -t <type> [-e | -d] [options...] [-b 
 Coding Algorithms
     arithmetic-ppm  Context Arithmetic Coding Algorithm (Prediction with Partial Match)
     arithmetic-fpm  Arithmetic Coding Algorithm (Fixed Probability Model)
+```
+
+### Fixed Probability Model
+
+`./scripts/example-fpm.sh`
+
+```bash
+# encode
+./bin/release/arithmetic-coding.exe \
+  -t arithmetic-fpm -b 8 -v -e \
+  -i ./alexnet.pth -o "./alexnet.pth.fpm.8.enc"
+# decode
+./bin/release/arithmetic-coding.exe \
+  -t arithmetic-fpm -b 8 -v -d \
+  -i "./alexnet.pth.fpm.8.enc" -o "./alexnet.pth.fpm.8.dec"
+# verify
+diff ./alexnet.pth ./alexnet.pth.fpm.8.dec && echo "OK" || echo "Failed"
+# cleanup
+rm ./alexnet.pth.fpm.8.enc ./alexnet.pth.fpm.8.dec
+```
+
+### Prediction with Partial Match
+
+`./scripts/example-ppm.sh`
+
+```bash
+# encode
+./bin/release/arithmetic-coding.exe \
+  -t arithmetic-ppm -b 8 -n 1 -v -e \
+  -i ./alexnet.pth -o "./alexnet.pth.ppm.8.1.enc"
+# decode
+./bin/release/arithmetic-coding.exe \
+  -t arithmetic-ppm -b 8 -n 1 -v -d \
+  -i "./alexnet.pth.ppm.8.1.enc" -o "./alexnet.pth.ppm.8.1.dec"
+# verify
+diff ./alexnet.pth ./alexnet.pth.ppm.8.dec && echo "OK" || echo "Failed"
+# cleanup
+rm ./alexnet.pth.ppm.8.1.enc ./alexnet.pth.ppm.8.1.dec
 ```
